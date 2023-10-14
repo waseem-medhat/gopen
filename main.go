@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+    "os"
+	"os/exec"
+)
 
 func main() {
-    fmt.Println("Gopen - a simple CLI to jump to coding projects")
+    cmd := exec.Command("vi") // or absolute binary path
+    cmd.Stdin = os.Stdin
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    err := cmd.Run()
+    if err != nil {
+        panic(err)
+    }
 }
