@@ -24,6 +24,11 @@ func main() {
 
 	case "--set-cmd", "-s":
 		checkConfig()
+        if len(os.Args) < 3 {
+            fmt.Println("No command provided")
+            return
+        }
+        setCmd(os.Args[2])
 	}
 
 	// "cd /home/waseem/.config/nvim && vi"
@@ -59,9 +64,21 @@ func getCmd() {
 	if err != nil {
 		log.Fatal(err)
 	}
+    defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		println(scanner.Text())
 	}
+}
+
+func setCmd(cmd string) {
+    f, err := os.OpenFile(configPath, os.O_WRONLY|os.O_TRUNC, 0644)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer f.Close()
+
+    f.WriteString(cmd)
+    fmt.Printf("Changed command: %v\n", cmd)
 }
