@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	// "os/exec"
+	"os/exec"
 )
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
@@ -20,28 +20,20 @@ func main() {
 	switch os.Args[1] {
 	case "--get-cmd", "-g":
 		checkConfig()
-        cmd := getCmd()
-        fmt.Println(cmd)
+		cmd := getCmd()
+		fmt.Println(cmd)
 
 	case "--set-cmd", "-s":
 		checkConfig()
-        if len(os.Args) < 3 {
-            fmt.Println("No command provided")
-            return
-        }
-        setCmd(os.Args[2])
-	}
+		if len(os.Args) < 3 {
+			fmt.Println("No command provided")
+			return
+		}
+		setCmd(os.Args[2])
 
-	// "cd /home/waseem/.config/nvim && vi"
-	// os.Chdir(os.Getenv("HOME") + "/.config/nvim")
-	// cmd := exec.Command(os.Getenv("HOME") + "/Downloads/software/nvim.appimage") // or absolute binary path
-	// cmd.Stdin = os.Stdin
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// err := cmd.Run()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	default:
+		gopen(os.Args[1])
+	}
 }
 
 func checkConfig() {
@@ -65,23 +57,50 @@ func getCmd() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-    defer f.Close()
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		return scanner.Text()
 	}
 
-    return ""
+	return ""
 }
 
 func setCmd(cmd string) {
-    f, err := os.OpenFile(configPath, os.O_WRONLY|os.O_TRUNC, 0644)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer f.Close()
+	f, err := os.OpenFile(configPath, os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
 
-    f.WriteString(cmd)
-    fmt.Printf("Changed command: %v\n", cmd)
+	f.WriteString(cmd)
+	fmt.Printf("Changed command: %v\n", cmd)
+}
+
+func gopen(path string) {
+	fInfo, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		fmt.Println("Path doesn't exist")
+		return
+	} else if err != nil {
+		log.Fatal(err)
+	}
+
+	if !fInfo.IsDir() {
+		println("Not a directory")
+		return
+	}
+
+	editorCmd := getCmd()
+	os.Chdir(path)
+	cmd := exec.Command(editorCmd)
+    cmd.Stdin = os.Stdin
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
