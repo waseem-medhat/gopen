@@ -95,9 +95,9 @@ func gopen(path string) {
 	editorCmd := getCmd()
 	os.Chdir(path)
 	cmd := exec.Command(editorCmd)
-    cmd.Stdin = os.Stdin
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
 	err = cmd.Run()
 	if err != nil {
