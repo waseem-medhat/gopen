@@ -20,7 +20,8 @@ func main() {
 	switch os.Args[1] {
 	case "--get-cmd", "-g":
 		checkConfig()
-        getCmd()
+        cmd := getCmd()
+        fmt.Println(cmd)
 
 	case "--set-cmd", "-s":
 		checkConfig()
@@ -59,7 +60,7 @@ func checkConfig() {
 	}
 }
 
-func getCmd() {
+func getCmd() string {
 	f, err := os.OpenFile(configPath, os.O_RDONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
@@ -68,8 +69,10 @@ func getCmd() {
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		println(scanner.Text())
+		return scanner.Text()
 	}
+
+    return ""
 }
 
 func setCmd(cmd string) {
