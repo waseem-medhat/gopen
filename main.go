@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
 	// "os/exec"
 )
+
+var configDir = os.Getenv("HOME") + "/.config/gopen"
+var configPath = configDir + "/gopenconf"
 
 func main() {
 	if len(os.Args) < 2 {
@@ -14,23 +18,27 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case "config":
+	case "--get-cmd", "-g":
+		checkConfig()
+        getCmd()
+
+	case "--set-cmd", "-s":
 		checkConfig()
 	}
-	// cmd := exec.Command("vi") // or absolute binary path
+
+	// "cd /home/waseem/.config/nvim && vi"
+	// os.Chdir(os.Getenv("HOME") + "/.config/nvim")
+	// cmd := exec.Command(os.Getenv("HOME") + "/Downloads/software/nvim.appimage") // or absolute binary path
 	// cmd.Stdin = os.Stdin
 	// cmd.Stdout = os.Stdout
 	// cmd.Stderr = os.Stderr
-	// err = cmd.Run()
+	// err := cmd.Run()
 	// if err != nil {
-	//     panic(err)
+	// 	panic(err)
 	// }
 }
 
 func checkConfig() {
-	configDir := os.Getenv("HOME") + "/.config/gopen"
-	configPath := configDir + "/gopen.json"
-
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		fmt.Println("Config file not found - creating one... ")
 
@@ -43,8 +51,17 @@ func checkConfig() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Created an empty config file!")
+	}
+}
+
+func getCmd() {
+	f, err := os.OpenFile(configPath, os.O_RDONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	fmt.Println("Config file found!")
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		println(scanner.Text())
+	}
 }
