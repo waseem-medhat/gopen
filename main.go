@@ -9,7 +9,6 @@ import (
 	"os/exec"
 )
 
-
 type Config struct {
 	EditorCmd string  `json:"editorCmd"`
 	Aliases   []Alias `json:"aliases"`
@@ -21,8 +20,8 @@ type Alias struct {
 }
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
-var configPath = configDir + "/gopenconf"
-var config Config
+var configPath = configDir + "/gopen.json"
+var config Config = Config{"", []Alias{}}
 
 func main() {
 	if len(os.Args) < 2 {
@@ -31,13 +30,14 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "--init", "-i":
+		initConfig()
+
 	case "--get-cmd", "-g":
-		checkConfig()
 		cmd := getCmd()
 		fmt.Println(cmd)
 
 	case "--set-cmd", "-s":
-		checkConfig()
 		if len(os.Args) < 3 {
 			fmt.Println("No command provided")
 			return
@@ -62,20 +62,29 @@ func main() {
 	}
 }
 
-func checkConfig() {
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		fmt.Println("Config file not found - creating one... ")
-
-		err := os.MkdirAll(configDir, os.ModePerm)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = os.Create(configPath)
-		if err != nil {
-			log.Fatal(err)
-		}
+func initConfig() {
+	if _, err := os.Stat(configPath); err == nil {
+		fmt.Println("Found config file")
+		return
 	}
+
+	err := os.MkdirAll(configDir, os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = os.Create(configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonFile, err := json.MarshalIndent(config, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	os.WriteFile(configPath, jsonFile, 0644)
+	fmt.Println("Created a new config file!")
 }
 
 func getCmd() string {
