@@ -2,14 +2,27 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 )
 
+
+type Config struct {
+	EditorCmd string  `json:"editorCmd"`
+	Aliases   []Alias `json:"aliases"`
+}
+
+type Alias struct {
+	Alias string `json:"alias"`
+	Path  string `json:"path"`
+}
+
 var configDir = os.Getenv("HOME") + "/.config/gopen"
 var configPath = configDir + "/gopenconf"
+var config Config
 
 func main() {
 	if len(os.Args) < 2 {
@@ -30,6 +43,19 @@ func main() {
 			return
 		}
 		setCmd(os.Args[2])
+
+	case "c":
+		f, err := os.ReadFile(os.Getenv("HOME") + "/.config/gopen/gopen.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(f, &config)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(config)
 
 	default:
 		gopen(os.Args[1])
