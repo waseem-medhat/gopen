@@ -44,19 +44,6 @@ func main() {
 		}
 		setCmd(os.Args[2])
 
-	case "c":
-		f, err := os.ReadFile(os.Getenv("HOME") + "/.config/gopen/gopen.json")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = json.Unmarshal(f, &config)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(config)
-
 	default:
 		gopen(os.Args[1])
 	}
@@ -64,10 +51,11 @@ func main() {
 
 func initConfig() {
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Println("Found config file")
+		fmt.Println("Found config file - exiting...")
 		return
 	}
 
+	fmt.Println("Creating a new config file...")
 	err := os.MkdirAll(configDir, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
@@ -78,13 +66,28 @@ func initConfig() {
 		log.Fatal(err)
 	}
 
+	writeConfig()
+}
+
+func writeConfig() {
 	jsonFile, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	os.WriteFile(configPath, jsonFile, 0644)
-	fmt.Println("Created a new config file!")
+}
+
+func readConfig() {
+	f, err := os.ReadFile(os.Getenv("HOME") + "/.config/gopen/gopen.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = json.Unmarshal(f, &config)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getCmd() string {
