@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -21,7 +20,6 @@ type Alias struct {
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
 var configPath = configDir + "/gopen.json"
-var config Config = Config{"", []Alias{}}
 
 func main() {
 	if len(os.Args) < 2 {
@@ -31,11 +29,11 @@ func main() {
 
 	switch os.Args[1] {
 	case "--init", "-i":
-		initConfig()
+		initConfig(configDir, configPath)
 
 	case "--get-cmd", "-g":
-		cmd := getCmd()
-		fmt.Println(cmd)
+		config := readConfig(configPath)
+		fmt.Println(config.EditorCmd)
 
 	case "--set-cmd", "-s":
 		if len(os.Args) < 3 {
@@ -49,7 +47,7 @@ func main() {
 	}
 }
 
-func initConfig() {
+func initConfig(configDir string, configPath string) {
 	if _, err := os.Stat(configPath); err == nil {
 		fmt.Println("Found config file - exiting...")
 		return
@@ -66,10 +64,11 @@ func initConfig() {
 		log.Fatal(err)
 	}
 
-	writeConfig()
+	emptyConfig := Config{"", []Alias{}}
+	writeConfig(emptyConfig, configPath)
 }
 
-func writeConfig() {
+func writeConfig(config Config, configPath string) {
 	jsonFile, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		log.Fatal(err)
@@ -78,8 +77,10 @@ func writeConfig() {
 	os.WriteFile(configPath, jsonFile, 0644)
 }
 
-func readConfig() {
-	f, err := os.ReadFile(os.Getenv("HOME") + "/.config/gopen/gopen.json")
+func readConfig(configPath string) Config {
+	var config Config
+
+	f, err := os.ReadFile(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,32 +89,14 @@ func readConfig() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
 
-func getCmd() string {
-	f, err := os.OpenFile(configPath, os.O_RDONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		return scanner.Text()
-	}
-
-	return ""
+	return config
 }
 
 func setCmd(cmd string) {
-	f, err := os.OpenFile(configPath, os.O_WRONLY|os.O_TRUNC, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	f.WriteString(cmd)
-	fmt.Printf("Changed command: %v\n", cmd)
+	config := readConfig(configPath)
+	config.EditorCmd = cmd
+	writeConfig(config, configPath)
 }
 
 func gopen(path string) {
@@ -130,7 +113,8 @@ func gopen(path string) {
 		return
 	}
 
-	editorCmd := getCmd()
+	config := readConfig(configPath)
+	editorCmd := config.EditorCmd
 	os.Chdir(path)
 	cmd := exec.Command(editorCmd)
 	cmd.Stdin = os.Stdin
