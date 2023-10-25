@@ -42,6 +42,20 @@ func main() {
 		}
 
 	case "--alias", "-a":
+		config := readConfig(configPath)
+		if len(os.Args) < 3 {
+			for _, dirAlias := range config.DirAliases {
+				fmt.Println(dirAlias.Alias, ":", dirAlias.Path)
+			}
+		} else if len(os.Args) > 4 {
+			fmt.Println("Too many arguments - exiting...")
+		} else {
+			config.DirAliases = append(
+				config.DirAliases,
+				DirAlias{os.Args[2], os.Args[3]},
+			)
+			writeConfig(config, configPath)
+		}
 
 	default:
 		gopen(os.Args[1])
