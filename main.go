@@ -40,7 +40,9 @@ func main() {
 			fmt.Println("No command provided")
 			return
 		}
-		setCmd(os.Args[2])
+		config := readConfig(configPath)
+		config.EditorCmd = os.Args[2]
+		writeConfig(config, configPath)
 
 	default:
 		gopen(os.Args[1])
@@ -96,12 +98,6 @@ func readConfig(configPath string) Config {
 	}
 
 	return config
-}
-
-func setCmd(cmd string) {
-	config := readConfig(configPath)
-	config.EditorCmd = cmd
-	writeConfig(config, configPath)
 }
 
 func gopen(path string) {
