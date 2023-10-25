@@ -9,11 +9,11 @@ import (
 )
 
 type Config struct {
-	EditorCmd string  `json:"editorCmd"`
-	Aliases   []Alias `json:"aliases"`
+	EditorCmd  string     `json:"editorCmd"`
+	DirAliases []DirAlias `json:"aliases"`
 }
 
-type Alias struct {
+type DirAlias struct {
 	Alias string `json:"alias"`
 	Path  string `json:"path"`
 }
@@ -47,6 +47,8 @@ func main() {
 	}
 }
 
+// initConfig checks if the config file exists in configPath. If not, creates
+// an empty config file. configDir will also be created if it doesn't exist.
 func initConfig(configDir string, configPath string) {
 	if _, err := os.Stat(configPath); err == nil {
 		fmt.Println("Found config file - exiting...")
@@ -64,10 +66,12 @@ func initConfig(configDir string, configPath string) {
 		log.Fatal(err)
 	}
 
-	emptyConfig := Config{"", []Alias{}}
+	emptyConfig := Config{"", []DirAlias{}}
 	writeConfig(emptyConfig, configPath)
 }
 
+// writeConfig writes config to configPath (will OVERWRITE if file already
+// exists)
 func writeConfig(config Config, configPath string) {
 	jsonFile, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
@@ -77,6 +81,7 @@ func writeConfig(config Config, configPath string) {
 	os.WriteFile(configPath, jsonFile, 0644)
 }
 
+// readConfig reads the configPath file and returns a Config struct
 func readConfig(configPath string) Config {
 	var config Config
 
