@@ -56,7 +56,8 @@ func main() {
 		}
 
 	default:
-		gopen(os.Args[1])
+		config := readConfig(configPath)
+		gopen(os.Args[1], config)
 	}
 }
 
@@ -125,8 +126,19 @@ func listDirAliases(config Config) {
 	}
 }
 
-func gopen(path string) {
-	fInfo, err := os.Stat(path)
+// gopen uses the Config struct to find the path corresponding to targetAlias
+// and executes the editor command with the target path as the working
+// directory
+func gopen(targetAlias string, config Config) {
+	var targetPath string
+	for _, dirAlias := range config.DirAliases {
+		if targetAlias == dirAlias.Alias {
+			targetPath = dirAlias.Path
+			break
+		}
+	}
+
+	fInfo, err := os.Stat(targetPath)
 	if os.IsNotExist(err) {
 		fmt.Println("Path doesn't exist")
 		return
@@ -139,9 +151,8 @@ func gopen(path string) {
 		return
 	}
 
-	config := readConfig(configPath)
 	editorCmd := config.EditorCmd
-	os.Chdir(path)
+	os.Chdir(targetPath)
 	cmd := exec.Command(editorCmd)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
