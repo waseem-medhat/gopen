@@ -31,18 +31,17 @@ func main() {
 	case "--init", "-i":
 		initConfig(configDir, configPath)
 
-	case "--get-cmd", "-g":
+	case "--editor-cmd", "-e":
 		config := readConfig(configPath)
-		fmt.Println(config.EditorCmd)
 
-	case "--set-cmd", "-s":
 		if len(os.Args) < 3 {
-			fmt.Println("No command provided")
-			return
+			fmt.Println(config.EditorCmd)
+		} else {
+			config.EditorCmd = os.Args[2]
+			writeConfig(config, configPath)
 		}
-		config := readConfig(configPath)
-		config.EditorCmd = os.Args[2]
-		writeConfig(config, configPath)
+
+	case "--alias", "-a":
 
 	default:
 		gopen(os.Args[1])
