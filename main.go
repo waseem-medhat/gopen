@@ -44,9 +44,7 @@ func main() {
 	case "--alias", "-a":
 		config := readConfig(configPath)
 		if len(os.Args) < 3 {
-			for _, dirAlias := range config.DirAliases {
-				fmt.Println(dirAlias.Alias, ":", dirAlias.Path)
-			}
+			listDirAliases(config)
 		} else if len(os.Args) > 4 {
 			fmt.Println("Too many arguments - exiting...")
 		} else {
@@ -111,6 +109,20 @@ func readConfig(configPath string) Config {
 	}
 
 	return config
+}
+
+// listDirAliases pretty-prints each alias and its corresponding path
+func listDirAliases(config Config) {
+	var width int
+	for _, dirAlias := range config.DirAliases {
+		if len(dirAlias.Alias) > width {
+			width = len(dirAlias.Alias)
+		}
+	}
+
+	for _, dirAlias := range config.DirAliases {
+		fmt.Printf("%*s: %s\n", width, dirAlias.Alias, dirAlias.Path)
+	}
 }
 
 func gopen(path string) {
