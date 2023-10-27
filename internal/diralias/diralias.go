@@ -1,3 +1,5 @@
+// Package diralias contains functions for listing or modifying directory
+// aliases in a Gopen config.
 package diralias
 
 import (

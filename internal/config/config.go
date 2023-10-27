@@ -1,3 +1,5 @@
+// Package config includes functions for initializing, reading, and writing
+// Gopen config files.
 package config
 
 import (

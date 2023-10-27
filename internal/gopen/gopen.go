@@ -1,3 +1,4 @@
+// Package gopen includes the main Gopen execution function.
 package gopen
 
 import (

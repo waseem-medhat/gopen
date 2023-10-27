@@ -1,3 +1,4 @@
+// Package structs simply contains struct types to be used by other packages.
 package structs
 
 type Config struct {
