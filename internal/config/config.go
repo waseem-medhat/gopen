@@ -31,18 +31,26 @@ func InitConfig(configDir string, configPath string) {
 	}
 
 	emptyConfig := structs.Config{}
-	WriteConfig(emptyConfig, configPath)
+	err = WriteConfig(emptyConfig, configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // WriteConfig writes config to configPath (will OVERWRITE if file already
 // exists)
-func WriteConfig(config structs.Config, configPath string) {
+func WriteConfig(config structs.Config, configPath string) error {
 	jsonFile, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	os.WriteFile(configPath, jsonFile, 0644)
+	err = os.WriteFile(configPath, jsonFile, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // ReadConfig reads the configPath file and returns a Config struct

@@ -65,3 +65,44 @@ func TestReadConfig(t *testing.T) {
 	}
 
 }
+
+func TestWriteConfig(t *testing.T) {
+	tmpfile, err := os.CreateTemp("", "example")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	testConfig := structs.Config{
+		EditorCmd: "vim",
+		DirAliases: []structs.DirAlias{
+			{Alias: "docs", Path: "/usr/share/doc"},
+		},
+	}
+	expectedOutput := `{
+  "editorCmd": "vim",
+  "aliases": [
+    {
+      "alias": "docs",
+      "path": "/usr/share/doc"
+    }
+  ]
+}`
+	err = os.WriteFile(tmpfile.Name(), []byte{}, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = WriteConfig(testConfig, tmpfile.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fileContents, err := os.ReadFile(tmpfile.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(fileContents) != expectedOutput {
+		t.Fatalf("Expected %q but got %q", expectedOutput, string(fileContents))
+	}
+}

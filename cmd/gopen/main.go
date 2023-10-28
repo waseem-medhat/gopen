@@ -34,7 +34,10 @@ func main() {
 			fmt.Println(configObj.EditorCmd)
 		} else {
 			configObj.EditorCmd = os.Args[2]
-			config.WriteConfig(configObj, configPath)
+			err := config.WriteConfig(configObj, configPath)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 	case "--alias", "-a":
@@ -52,7 +55,10 @@ func main() {
 				configObj.DirAliases,
 				structs.DirAlias{Alias: os.Args[2], Path: os.Args[3]},
 			)
-			config.WriteConfig(configObj, configPath)
+			err := config.WriteConfig(configObj, configPath)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 	default:
