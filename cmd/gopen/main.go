@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/wipdev-tech/gopen/internal/config"
@@ -24,7 +25,10 @@ func main() {
 		config.InitConfig(configDir, configPath)
 
 	case "--editor-cmd", "-e":
-		configObj := config.ReadConfig(configPath)
+		configObj, err := config.ReadConfig(configPath)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		if len(os.Args) < 3 {
 			fmt.Println(configObj.EditorCmd)
@@ -34,7 +38,11 @@ func main() {
 		}
 
 	case "--alias", "-a":
-		configObj := config.ReadConfig(configPath)
+		configObj, err := config.ReadConfig(configPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		if len(os.Args) < 3 {
 			diralias.ListDirAliases(configObj)
 		} else if len(os.Args) > 4 {
@@ -48,7 +56,11 @@ func main() {
 		}
 
 	default:
-		configObj := config.ReadConfig(configPath)
+		configObj, err := config.ReadConfig(configPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		gopen.Gopen(os.Args[1], configObj)
 	}
 }

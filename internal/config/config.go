@@ -46,18 +46,18 @@ func WriteConfig(config structs.Config, configPath string) {
 }
 
 // ReadConfig reads the configPath file and returns a Config struct
-func ReadConfig(configPath string) structs.Config {
+func ReadConfig(configPath string) (structs.Config, error) {
 	var config structs.Config
 
 	f, err := os.ReadFile(configPath)
 	if err != nil {
-		log.Fatal(err)
+		return config, err
 	}
 
 	err = json.Unmarshal(f, &config)
 	if err != nil {
-		log.Fatal(err)
+		return config, err
 	}
 
-	return config
+	return config, nil
 }
