@@ -22,7 +22,10 @@ func main() {
 
 	switch os.Args[1] {
 	case "--init", "-i":
-		config.InitConfig(configDir, configPath)
+		err := config.InitConfig(configDir, configPath)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error: %v", err))
+		}
 
 	case "--editor-cmd", "-e":
 		configObj, err := config.ReadConfig(configPath)

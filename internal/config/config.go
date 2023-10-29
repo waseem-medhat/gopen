@@ -4,8 +4,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"os"
 
 	"github.com/wipdev-tech/gopen/internal/structs"
@@ -13,28 +11,28 @@ import (
 
 // InitConfig checks if the config file exists in configPath. If not, creates
 // an empty config file. configDir will also be created if it doesn't exist.
-func InitConfig(configDir string, configPath string) {
+func InitConfig(configDir string, configPath string) error {
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Println("Found config file - exiting...")
-		return
+		return os.ErrExist
 	}
 
-	fmt.Println("Creating a new config file...")
 	err := os.MkdirAll(configDir, os.ModePerm)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	_, err = os.Create(configPath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	emptyConfig := structs.Config{}
 	err = WriteConfig(emptyConfig, configPath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
 // WriteConfig writes config to configPath (will OVERWRITE if file already

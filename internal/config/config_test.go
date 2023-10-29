@@ -9,6 +9,112 @@ import (
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
+func TestInitConfigCreatesNewFile(t *testing.T) {
+	dir, err := os.MkdirTemp("", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	configPath := dir + "/config.json"
+	err = InitConfig(dir, configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = os.Stat(configPath)
+	if os.IsNotExist(err) {
+		t.Errorf("expected file to exist at %s, but it doesn't", configPath)
+	}
+}
+
+func TestInitConfigReturnsErrorIfFileExists(t *testing.T) {
+	dir, err := os.MkdirTemp("", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	configPath := dir + "/config.json"
+	_, err = os.Create(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = InitConfig(dir, configPath)
+	if err == nil {
+		t.Error("expected an error, but got nil")
+	}
+	if !os.IsExist(err) {
+		t.Errorf("expected error to be os.ErrExist, but got %v", err)
+	}
+}
+
+func TestInitConfigReturnsErrorIfDirectoryCreationFails(t *testing.T) {
+	dir, err := os.MkdirTemp("", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	configPath := dir + "/nonexistent/config.json"
+	err = InitConfig(dir, configPath)
+	if err == nil {
+		t.Error("expected an error, but got nil")
+	}
+}
+
+func TestInitConfigReturnsErrorIfFileCreationFails(t *testing.T) {
+	dir, err := os.MkdirTemp("", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	configPath := dir + "/config.json"
+	file, err := os.Create(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = file.Chmod(0400)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = InitConfig(dir, configPath)
+	if err == nil {
+		t.Error("expected an error, but got nil")
+	}
+}
+
+func TestInitConfigWritesEmptyConfig(t *testing.T) {
+	dir, err := os.MkdirTemp("", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	configPath := dir + "/config.json"
+	err = InitConfig(dir, configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	newConfig, err := ReadConfig(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if newConfig.EditorCmd != "" {
+		t.Fatal("Config's EditorCmd is not empty")
+	}
+
+	if len(newConfig.DirAliases) != 0 {
+		t.Fatal("Config's DirAliases is not empty")
+	}
+}
+
 func TestReadConfig(t *testing.T) {
 	// Case 1: reading a file that does not exist
 	_, err := ReadConfig("/tmp/nonexistent_file")
