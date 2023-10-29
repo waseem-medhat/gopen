@@ -9,7 +9,7 @@ import (
 )
 
 // listDirAliases pretty-prints each alias and its corresponding path
-func ListDirAliases(config structs.Config) {
+func ListDirAliases(config structs.Config) []string {
 	var width int
 	for _, dirAlias := range config.DirAliases {
 		if len(dirAlias.Alias) > width {
@@ -17,7 +17,11 @@ func ListDirAliases(config structs.Config) {
 		}
 	}
 
+	var fmtAliases []string
 	for _, dirAlias := range config.DirAliases {
-		fmt.Printf("%*s: %s\n", width, dirAlias.Alias, dirAlias.Path)
+		fmtAlias := fmt.Sprintf("%*s: %s", width, dirAlias.Alias, dirAlias.Path)
+		fmtAliases = append(fmtAliases, fmtAlias)
 	}
+
+	return fmtAliases
 }

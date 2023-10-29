@@ -50,7 +50,9 @@ func main() {
 		}
 
 		if len(os.Args) < 3 {
-			diralias.ListDirAliases(configObj)
+			for _, fmtAlias := range diralias.ListDirAliases(configObj) {
+				fmt.Println(fmtAlias)
+			}
 		} else if len(os.Args) > 4 {
 			fmt.Println("Too many arguments - exiting...")
 		} else {
