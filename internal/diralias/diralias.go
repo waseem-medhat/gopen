@@ -9,7 +9,7 @@ import (
 )
 
 // listDirAliases pretty-prints each alias and its corresponding path
-func ListDirAliases(config structs.Config) (fmtAliases []string) {
+func List(config structs.Config) (fmtAliases []string) {
 	var width int
 	for _, dirAlias := range config.DirAliases {
 		if len(dirAlias.Alias) > width {

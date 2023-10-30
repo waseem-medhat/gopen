@@ -9,9 +9,9 @@ import (
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
-// InitConfig checks if the config file exists in configPath. If not, creates
-// an empty config file. configDir will also be created if it doesn't exist.
-func InitConfig(configDir string, configPath string) (err error) {
+// Init checks if the config file exists in configPath. If not, creates an
+// empty config file. configDir will also be created if it doesn't exist.
+func Init(configDir string, configPath string) (err error) {
 	_, err = os.Stat(configPath)
 	if err == nil {
 		return os.ErrExist
@@ -28,7 +28,7 @@ func InitConfig(configDir string, configPath string) (err error) {
 	}
 
 	emptyConfig := structs.Config{}
-	err = WriteConfig(emptyConfig, configPath)
+	err = Write(emptyConfig, configPath)
 	if err != nil {
 		return
 	}
@@ -36,9 +36,8 @@ func InitConfig(configDir string, configPath string) (err error) {
 	return
 }
 
-// WriteConfig writes config to configPath (will OVERWRITE if file already
-// exists)
-func WriteConfig(config structs.Config, configPath string) (err error) {
+// Write writes config to configPath (will OVERWRITE if file already exists)
+func Write(config structs.Config, configPath string) (err error) {
 	jsonFile, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return
@@ -52,8 +51,8 @@ func WriteConfig(config structs.Config, configPath string) (err error) {
 	return
 }
 
-// ReadConfig reads the configPath file and returns a Config struct
-func ReadConfig(configPath string) (config structs.Config, err error) {
+// Read reads the configPath file and returns a Config struct
+func Read(configPath string) (config structs.Config, err error) {
 	f, err := os.ReadFile(configPath)
 	if err != nil {
 		return

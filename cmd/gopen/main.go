@@ -21,13 +21,13 @@ func main() {
 
 	switch os.Args[1] {
 	case "--init", "-i":
-		err := config.InitConfig(configDir, configPath)
+		err := config.Init(configDir, configPath)
 		if err != nil {
 			fmt.Println(fmt.Errorf("error: %v", err))
 		}
 
 	case "--editor-cmd", "-e":
-		configObj, err := config.ReadConfig(configPath)
+		configObj, err := config.Read(configPath)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -36,34 +36,34 @@ func main() {
 			fmt.Println(configObj.EditorCmd)
 		} else {
 			configObj.EditorCmd = os.Args[2]
-			err := config.WriteConfig(configObj, configPath)
+			err := config.Write(configObj, configPath)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
 
 	case "--alias", "-a":
-		configObj, err := config.ReadConfig(configPath)
+		configObj, err := config.Read(configPath)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		if len(os.Args) < 3 {
-			for _, fmtAlias := range diralias.ListDirAliases(configObj) {
+			for _, fmtAlias := range diralias.List(configObj) {
 				fmt.Println(fmtAlias)
 			}
 		} else if len(os.Args) > 4 {
 			fmt.Println("Too many arguments - exiting...")
 		} else {
 			configObj = diralias.Add(configObj, os.Args[2], os.Args[3])
-			err := config.WriteConfig(configObj, configPath)
+			err := config.Write(configObj, configPath)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
 
 	default:
-		configObj, err := config.ReadConfig(configPath)
+		configObj, err := config.Read(configPath)
 		if err != nil {
 			log.Fatal(err)
 		}

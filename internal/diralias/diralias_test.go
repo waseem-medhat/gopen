@@ -8,7 +8,7 @@ import (
 
 func TestListDirAliases(t *testing.T) {
 	config := structs.Config{DirAliases: []structs.DirAlias{}}
-	result := ListDirAliases(config)
+	result := List(config)
 	if len(result) != 0 {
 		t.Errorf("Expected an empty slice, but got %v", result)
 	}
@@ -27,7 +27,7 @@ func TestListDirAliases(t *testing.T) {
 		"abc: /path/to/abc",
 	}
 
-	actual := ListDirAliases(config)
+	actual := List(config)
 
 	for i, actLine := range actual {
 		if actLine != expected[i] {

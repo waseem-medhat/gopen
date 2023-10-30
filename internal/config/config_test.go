@@ -17,7 +17,7 @@ func TestInitConfigCreatesNewFile(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	configPath := dir + "/config.json"
-	err = InitConfig(dir, configPath)
+	err = Init(dir, configPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func TestInitConfigReturnsErrorIfFileExists(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = InitConfig(dir, configPath)
+	err = Init(dir, configPath)
 	if err == nil {
 		t.Error("expected an error, but got nil")
 	}
@@ -58,7 +58,7 @@ func TestInitConfigReturnsErrorIfDirectoryCreationFails(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	configPath := dir + "/nonexistent/config.json"
-	err = InitConfig(dir, configPath)
+	err = Init(dir, configPath)
 	if err == nil {
 		t.Error("expected an error, but got nil")
 	}
@@ -82,7 +82,7 @@ func TestInitConfigReturnsErrorIfFileCreationFails(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = InitConfig(dir, configPath)
+	err = Init(dir, configPath)
 	if err == nil {
 		t.Error("expected an error, but got nil")
 	}
@@ -96,12 +96,12 @@ func TestInitConfigWritesEmptyConfig(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	configPath := dir + "/config.json"
-	err = InitConfig(dir, configPath)
+	err = Init(dir, configPath)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	newConfig, err := ReadConfig(configPath)
+	newConfig, err := Read(configPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,7 +117,7 @@ func TestInitConfigWritesEmptyConfig(t *testing.T) {
 
 func TestReadConfig(t *testing.T) {
 	// Case 1: reading a file that does not exist
-	_, err := ReadConfig("/tmp/nonexistent_file")
+	_, err := Read("/tmp/nonexistent_file")
 	if !os.IsNotExist(err) {
 		t.Fatalf("Expected a \"Not exist\" error but got \"%v\"", err)
 	}
@@ -135,7 +135,7 @@ func TestReadConfig(t *testing.T) {
 	if err := tmpfile2.Close(); err != nil {
 		t.Fatal(err)
 	}
-	config, err := ReadConfig(tmpfile2.Name())
+	config, err := Read(tmpfile2.Name())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func TestReadConfig(t *testing.T) {
 	if err := tmpfile3.Close(); err != nil {
 		t.Fatal(err)
 	}
-	_, err = ReadConfig(tmpfile3.Name())
+	_, err = Read(tmpfile3.Name())
 	if err == nil {
 		t.Fatal("Expected an error but got nil")
 	}
@@ -199,7 +199,7 @@ func TestWriteConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = WriteConfig(testConfig, tmpfile.Name())
+	err = Write(testConfig, tmpfile.Name())
 	if err != nil {
 		t.Fatal(err)
 	}
