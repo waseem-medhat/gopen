@@ -8,7 +8,6 @@ import (
 	"github.com/wipdev-tech/gopen/internal/config"
 	"github.com/wipdev-tech/gopen/internal/diralias"
 	"github.com/wipdev-tech/gopen/internal/gopen"
-	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
@@ -56,10 +55,7 @@ func main() {
 		} else if len(os.Args) > 4 {
 			fmt.Println("Too many arguments - exiting...")
 		} else {
-			configObj.DirAliases = append(
-				configObj.DirAliases,
-				structs.DirAlias{Alias: os.Args[2], Path: os.Args[3]},
-			)
+			configObj = diralias.Add(configObj, os.Args[2], os.Args[3])
 			err := config.WriteConfig(configObj, configPath)
 			if err != nil {
 				log.Fatal(err)

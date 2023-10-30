@@ -24,3 +24,14 @@ func ListDirAliases(config structs.Config) (fmtAliases []string) {
 
 	return
 }
+
+// Add takes a config, a new alias, and its path, then it returns a new config object
+func Add(config structs.Config, alias string, path string) (newConfig structs.Config) {
+	newConfig = config
+	newConfig.DirAliases = append(
+		newConfig.DirAliases,
+		structs.DirAlias{Alias: alias, Path: path},
+	)
+
+	return
+}
