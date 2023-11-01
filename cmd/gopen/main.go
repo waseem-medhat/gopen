@@ -68,18 +68,28 @@ func handleAlias() {
 		log.Fatal(err)
 	}
 
-	if len(os.Args) < 3 {
+	switch len(os.Args) {
+	case 2:
 		for _, fmtAlias := range diralias.List(configObj) {
 			fmt.Println(fmtAlias)
 		}
-	} else if len(os.Args) > 4 {
-		fmt.Println("Too many arguments - exiting...")
-	} else {
+
+	case 3:
+		for _, dirAlias := range configObj.DirAliases {
+			if dirAlias.Alias == os.Args[2] {
+				fmt.Println(dirAlias.Path)
+			}
+		}
+
+	case 4:
 		configObj = diralias.Add(configObj, os.Args[2], os.Args[3])
 		err := config.Write(configObj, configPath)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+	default:
+		fmt.Println("Too many arguments - exiting...")
 	}
 }
 
