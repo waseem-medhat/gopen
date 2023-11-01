@@ -51,3 +51,18 @@ gopen -e
 # vi
 ```
 
+### Directory Aliases
+
+The `--alias` option, or its shorthand `-a`, allows you to list the aliases,
+get the path assigned to a specific alias, or set a new one.
+
+```bash
+# list all aliases
+gopen -a
+
+# get the path assigned to a specifc alias
+gopen -a myproj
+
+# set a new alias
+gopen -a myproj path/to/my-proj
+```
