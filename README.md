@@ -25,44 +25,44 @@ folder and open your editor of choice.
 ### Config File
 
 Your editor command and directory aliases will be stored in
-`~/.config/gopen/gopen.json`, which can be initially created with the --init
-option, or its shorthand `-i`. Both the file and the directory will be created
+`~/.config/gopen/gopen.json`, which can be initially created with the init
+option, or its shorthand `i`. Both the file and the directory will be created
 if they don't exist.
 
 ```bash
-gopen -i
+gopen i
 # Creating a new config file...
 
-gopen -i
+gopen i
 # Found config file - exiting...
 ```
 
 ### Editor Command
 
-The `--editor-cmd` option, or its shorthand `-e`, allows you to get or set your
-editor command. Using it with no additional command-line arguments will get the
+The `editor` option, or its shorthand `e`, allows you to get or set your editor
+command. Using it with no additional command-line arguments will get the
 current editor command. Adding the command (or the path to an executable
 binary) as an argument will set it in the config.
 
 ```bash
-gopen -e vi
+gopen e vi
 
-gopen -e
+gopen e
 # vi
 ```
 
 ### Directory Aliases
 
-The `--alias` option, or its shorthand `-a`, allows you to list the aliases,
-get the path assigned to a specific alias, or set a new one.
+The `alias` option, or its shorthand `a`, allows you to list the aliases, get
+the path assigned to a specific alias, or set a new one.
 
 ```bash
 # list all aliases
-gopen -a
+gopen a
 
 # get the path assigned to a specifc alias
-gopen -a myproj
+gopen a myproj
 
 # set a new alias
-gopen -a myproj path/to/my-proj
+gopen a myproj path/to/my-proj
 ```

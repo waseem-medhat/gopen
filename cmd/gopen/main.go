@@ -20,13 +20,13 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case "--init", "-i":
+	case "init", "i":
 		handleInit()
 
-	case "--editor-cmd", "-e":
-		handleEditorCmd()
+	case "editor", "e":
+		handleEditor()
 
-	case "--alias", "-a":
+	case "alias", "a":
 		handleAlias()
 
 	default:
@@ -45,7 +45,7 @@ func handleInit() {
 	}
 }
 
-func handleEditorCmd() {
+func handleEditor() {
 	configObj, err := config.Read(configPath)
 	if err != nil {
 		log.Fatal(err)
