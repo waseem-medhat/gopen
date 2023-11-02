@@ -78,12 +78,19 @@ func handleAlias() {
 		for _, dirAlias := range configObj.DirAliases {
 			if dirAlias.Alias == os.Args[2] {
 				fmt.Println(dirAlias.Path)
+				return
 			}
 		}
+		fmt.Println("Alias doesn't exist")
 
 	case 4:
-		configObj = diralias.Add(configObj, os.Args[2], os.Args[3])
-		err := config.Write(configObj, configPath)
+		configObj, err := diralias.Add(configObj, os.Args[2], os.Args[3])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		err = config.Write(configObj, configPath)
 		if err != nil {
 			log.Fatal(err)
 		}

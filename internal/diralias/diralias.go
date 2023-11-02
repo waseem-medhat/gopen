@@ -25,13 +25,30 @@ func List(config structs.Config) (fmtAliases []string) {
 	return
 }
 
-// Add takes a config, a new alias, and its path, then it returns a new config object
-func Add(config structs.Config, alias string, path string) (newConfig structs.Config) {
+// Add takes a config, a new alias, and its path, then it returns a new config
+// struct with the newly added alias. If the alias already exists, the function
+// will overwrite it. It also ensures that no alias matches Gopen commands like
+// `alias` or `init`.
+func Add(config structs.Config, alias string, path string) (newConfig structs.Config, err error) {
 	newConfig = config
-	newConfig.DirAliases = append(
-		newConfig.DirAliases,
-		structs.DirAlias{Alias: alias, Path: path},
-	)
 
+	reserved := []string{"a", "alias", "e", "editor", "i", "init"}
+	for _, r := range reserved {
+		if r == alias {
+			err = fmt.Errorf("Error: `%v` is reserved and can't be used as an alias", alias)
+			return
+		}
+	}
+
+	newDirAlias := structs.DirAlias{Alias: alias, Path: path}
+
+	for i, dirAlias := range newConfig.DirAliases {
+		if dirAlias.Alias == alias {
+			newConfig.DirAliases[i] = newDirAlias
+			return
+		}
+	}
+
+	newConfig.DirAliases = append(newConfig.DirAliases, newDirAlias)
 	return
 }
