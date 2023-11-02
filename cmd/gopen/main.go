@@ -42,7 +42,6 @@ func handleHelp() {
 	const strTmpl = "    %-*s  %s\n"
 
 	fmt.Println("Gopen - a simple CLI to quick-start coding projects")
-	fmt.Println("")
 	fmt.Println(`
 The premise of this command-line utility is to save an editor of choice and a
 list of aliases for your local development projects instead of "polluting" your
