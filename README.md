@@ -20,6 +20,17 @@ list of aliases for your local development projects instead of "polluting" your
 system-level configs (e.g., `.bashrc`). Then, Gopen command will `cd` into that
 folder and open your editor of choice.
 
+## Installation
+
+- Check the [releases](https://github.com/wipdev-tech/gopen/releases) for the
+  binary (only Linux for now).
+- To install from source, you need to have Go installed, clone this repo and
+  run this command:
+
+```bash
+go install ./cmd/gopen/main.go
+```
+
 ## Usage
 
 ### Config File
