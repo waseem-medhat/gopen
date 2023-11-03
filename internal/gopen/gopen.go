@@ -2,8 +2,7 @@
 package gopen
 
 import (
-	"fmt"
-	"log"
+	"errors"
 	"os"
 	"os/exec"
 
@@ -13,7 +12,7 @@ import (
 // Gopen uses the Config struct to find the path corresponding to targetAlias
 // and executes the editor command with the target path as the working
 // directory
-func Gopen(targetAlias string, config structs.Config) {
+func Gopen(targetAlias string, config structs.Config) (err error) {
 	var targetPath string
 	for _, dirAlias := range config.DirAliases {
 		if targetAlias == dirAlias.Alias {
@@ -22,17 +21,8 @@ func Gopen(targetAlias string, config structs.Config) {
 		}
 	}
 
-	fInfo, err := os.Stat(targetPath)
-	if os.IsNotExist(err) {
-		fmt.Println("Path doesn't exist")
-		return
-	} else if err != nil {
-		log.Fatal(err)
-	}
-
-	if !fInfo.IsDir() {
-		println("Not a directory")
-		return
+	if targetPath == "" {
+		return errors.New("Invalid command or non-existent alias\nRun `gopen help` for info")
 	}
 
 	editorCmd := config.EditorCmd
@@ -44,6 +34,8 @@ func Gopen(targetAlias string, config structs.Config) {
 
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
+
+	return
 }

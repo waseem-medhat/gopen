@@ -75,26 +75,20 @@ func handleInit() {
 
 func handleEditor() {
 	configObj, err := config.Read(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	errFatal(err)
 
 	if len(os.Args) < 3 {
 		fmt.Println(configObj.EditorCmd)
 	} else {
 		configObj.EditorCmd = os.Args[2]
 		err := config.Write(configObj, configPath)
-		if err != nil {
-			log.Fatal(err)
-		}
+		errFatal(err)
 	}
 }
 
 func handleAlias() {
 	configObj, err := config.Read(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	errFatal(err)
 
 	switch len(os.Args) {
 	case 2:
@@ -119,9 +113,7 @@ func handleAlias() {
 		}
 
 		err = config.Write(configObj, configPath)
-		if err != nil {
-			log.Fatal(err)
-		}
+		errFatal(err)
 
 	default:
 		fmt.Println("Too many arguments - exiting...")
@@ -130,9 +122,16 @@ func handleAlias() {
 
 func handleGopen() {
 	configObj, err := config.Read(configPath)
+	errFatal(err)
+
+	err = gopen.Gopen(os.Args[1], configObj)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func errFatal(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	gopen.Gopen(os.Args[1], configObj)
 }
