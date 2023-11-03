@@ -32,7 +32,7 @@ func List(config structs.Config) (fmtAliases []string) {
 func Add(config structs.Config, alias string, path string) (newConfig structs.Config, err error) {
 	newConfig = config
 
-	reserved := []string{"a", "alias", "e", "editor", "i", "init"}
+	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init"}
 	for _, r := range reserved {
 		if r == alias {
 			err = fmt.Errorf("Error: `%v` is reserved and can't be used as an alias", alias)

@@ -67,6 +67,12 @@ gopen a myproj
 gopen a myproj path/to/my-proj
 ```
 
+You can remove aliases using `remove` or its shorthand `r`.
+
+```bash
+gopen remove myproj
+```
+
 ### Execution
 
 Once you have your editor and aliases configured, simply provide the alias to

@@ -8,6 +8,7 @@ import (
 	"github.com/wipdev-tech/gopen/internal/config"
 	"github.com/wipdev-tech/gopen/internal/diralias"
 	"github.com/wipdev-tech/gopen/internal/gopen"
+	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
@@ -32,38 +33,12 @@ func main() {
 	case "alias", "a":
 		handleAlias()
 
+	case "remove", "r":
+		handleRemove()
+
 	default:
 		handleGopen()
 	}
-}
-
-func handleHelp() {
-	const width = 16
-	const strTmpl = "    %-*s  %s\n"
-
-	fmt.Println("Gopen - a simple CLI to quick-start coding projects")
-	fmt.Println("")
-	fmt.Println("Usage:")
-	fmt.Println("")
-	fmt.Printf(strTmpl, width, "gopen foo", "cd into path assigned to alias `foo` and run the editor cmd")
-	fmt.Printf(strTmpl, width, "gopen cmd [args]", "Run command `cmd` (see Commands below)")
-	fmt.Println("")
-	fmt.Println("Commands:")
-	fmt.Println("Can be abbreviated by the first letter (`gopen i` == `gopen init`)")
-	fmt.Println("")
-	fmt.Printf(strTmpl, width, "init", "Initialize a new config file (~/.config/gopen/gopen.json)")
-	fmt.Println("")
-	fmt.Printf(strTmpl, width, "editor", "Get editor command")
-	fmt.Printf(strTmpl, width, "editor cmd", "Set editor command to `cmd`")
-	fmt.Println("")
-	fmt.Printf(strTmpl, width, "alias", "List all saved aliases")
-	fmt.Printf(strTmpl, width, "alias foo", "Get path assigned to alias 'foo'")
-	fmt.Printf(strTmpl, width, "alias foo bar", "Assign to alias `foo` the path `bar`")
-	fmt.Println("")
-	fmt.Printf(strTmpl, width, "remove foo", "Remove alias `foo` from the config")
-	fmt.Println("")
-	fmt.Printf(strTmpl, width, "help", "Print this help message")
-	fmt.Println("")
 }
 
 func handleInit() {
@@ -134,4 +109,53 @@ func errFatal(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func handleRemove() {
+	configObj, err := config.Read(configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(os.Args) != 3 {
+		fmt.Println("Error: must provide one alias to 'remove' command")
+		return
+	}
+
+	var newConfig structs.Config
+	newConfig.EditorCmd = configObj.EditorCmd
+	for _, dirAlias := range configObj.DirAliases {
+		if dirAlias.Alias != os.Args[2] {
+			newConfig.DirAliases = append(newConfig.DirAliases, dirAlias)
+		}
+	}
+
+	config.Write(newConfig, configPath)
+}
+
+func handleHelp() {
+	fmt.Print(`Gopen - a simple CLI to quick-start coding projects
+
+Usage:
+
+    gopen foo         cd into path assigned to alias 'foo' and run the editor cmd
+    gopen cmd [args]  Run command 'cmd' (see Commands below)
+
+Commands:
+Can be abbreviated by the first letter ('gopen i' == 'gopen init')
+
+    init              Initialize a new config file (~/.config/gopen/gopen.json)
+
+    editor            Get editor command
+    editor cmd        Set editor command to 'cmd'
+
+    alias             List all saved aliases
+    alias foo         Get path assigned to alias 'foo'
+    alias foo bar     Assign to alias 'foo' the path 'bar'
+
+    remove foo        Remove alias 'foo' from the config
+
+    help              Print this help message
+
+`)
 }
