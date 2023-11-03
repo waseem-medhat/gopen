@@ -66,3 +66,12 @@ gopen a myproj
 # set a new alias
 gopen a myproj path/to/my-proj
 ```
+
+### Execution
+
+Once you have your editor and aliases configured, simply provide the alias to
+the `gopen` command. It will cd into the assigned path and open your editor.
+
+```bash
+gopen myproj
+```

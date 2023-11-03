@@ -38,27 +38,31 @@ func main() {
 }
 
 func handleHelp() {
-	const width = 17
+	const width = 16
 	const strTmpl = "    %-*s  %s\n"
 
 	fmt.Println("Gopen - a simple CLI to quick-start coding projects")
-	fmt.Println(`
-The premise of this command-line utility is to save an editor of choice and a
-list of aliases for your local development projects instead of "polluting" your
-system-level configs (e.g., .bashrc). Then, Gopen command will cd into that
-folder and open your editor of choice.`,
-	)
+	fmt.Println("")
+	fmt.Println("Usage:")
+	fmt.Println("")
+	fmt.Printf(strTmpl, width, "gopen foo", "cd into path assigned to alias `foo` and run the editor cmd")
+	fmt.Printf(strTmpl, width, "gopen cmd [args]", "Run command `cmd` (see Commands below)")
 	fmt.Println("")
 	fmt.Println("Commands:")
+	fmt.Println("Can be abbreviated by the first letter (`gopen i` == `gopen init`)")
 	fmt.Println("")
-	fmt.Printf(strTmpl, width, "init, i", "Initialize a new config file")
-	fmt.Printf(strTmpl, width, "editor, e", "Get editor command")
-	fmt.Printf(strTmpl, width, "    editor cmd", "Set editor command to `cmd`")
-	fmt.Printf(strTmpl, width, "alias, a", "List all saved aliases")
-	fmt.Printf(strTmpl, width, "    alias foo", "Get path for alias 'foo'")
-	fmt.Printf(strTmpl, width, "    alias foo bar", "Set alias `foo` to path `bar`")
-	fmt.Printf(strTmpl, width, "remove, r alias", "Remove `alias` from the list")
-	fmt.Printf(strTmpl, width, "help, h", "Print this help message")
+	fmt.Printf(strTmpl, width, "init", "Initialize a new config file (~/.config/gopen/gopen.json)")
+	fmt.Println("")
+	fmt.Printf(strTmpl, width, "editor", "Get editor command")
+	fmt.Printf(strTmpl, width, "editor cmd", "Set editor command to `cmd`")
+	fmt.Println("")
+	fmt.Printf(strTmpl, width, "alias", "List all saved aliases")
+	fmt.Printf(strTmpl, width, "alias foo", "Get path assigned to alias 'foo'")
+	fmt.Printf(strTmpl, width, "alias foo bar", "Assign to alias `foo` the path `bar`")
+	fmt.Println("")
+	fmt.Printf(strTmpl, width, "remove foo", "Remove alias `foo` from the config")
+	fmt.Println("")
+	fmt.Printf(strTmpl, width, "help", "Print this help message")
 	fmt.Println("")
 }
 
