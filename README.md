@@ -28,8 +28,11 @@ folder and open your editor of choice.
   run this command:
 
 ```bash
-go install ./cmd/gopen/main.go
+go install ./...
 ```
+
+This should build the the `gopen` binary and install it in the directory
+specified by your `GOBIN` environment variable.
 
 ## Usage
 
