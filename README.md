@@ -28,7 +28,7 @@ folder and open your editor of choice.
   run this command:
 
 ```bash
-go install ./...
+go install
 ```
 
 This should build the the `gopen` binary and install it in the directory

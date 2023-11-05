@@ -26,7 +26,11 @@ func Gopen(targetAlias string, config structs.Config) (err error) {
 	}
 
 	editorCmd := config.EditorCmd
-	os.Chdir(targetPath)
+	err = os.Chdir(targetPath)
+	if err != nil {
+		return
+	}
+
 	cmd := exec.Command(editorCmd)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout

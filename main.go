@@ -113,9 +113,7 @@ func errFatal(err error) {
 
 func handleRemove() {
 	configObj, err := config.Read(configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	errFatal(err)
 
 	if len(os.Args) != 3 {
 		fmt.Println("Error: must provide one alias to 'remove' command")
@@ -130,7 +128,8 @@ func handleRemove() {
 		}
 	}
 
-	config.Write(newConfig, configPath)
+	err = config.Write(newConfig, configPath)
+	errFatal(err)
 }
 
 func handleHelp() {
