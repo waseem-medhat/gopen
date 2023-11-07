@@ -21,25 +21,31 @@ func Gopen(targetAlias string, config structs.Config) (err error) {
 		}
 	}
 
-	if targetPath == "" {
-		return errors.New("Invalid command or non-existent alias\nRun `gopen help` for info")
-	}
+    if targetPath == "" {
+        return errors.New("Invalid command or non-existent alias\nRun `gopen help` for info")
+    }
+    var cmd *exec.Cmd
+    editorCmd := config.EditorCmd
+    err = os.Chdir(targetPath)
+    if err != nil {
+        return
+    }
+    // Custom editor allows for the use of non-terminal based editors
+    // that need the path to the project as an argument
+    if config.CustomBehaviour {
+        cmd = exec.Command(editorCmd, targetPath)
+    } else {
+        cmd = exec.Command(editorCmd)
+    }
 
-	editorCmd := config.EditorCmd
-	err = os.Chdir(targetPath)
-	if err != nil {
-		return
-	}
+cmd.Stdin = os.Stdin
+cmd.Stdout = os.Stdout
+cmd.Stderr = os.Stderr
 
-	cmd := exec.Command(editorCmd)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+err = cmd.Run()
+if err != nil {
+    return
+}
 
-	err = cmd.Run()
-	if err != nil {
-		return
-	}
-
-	return
+return
 }

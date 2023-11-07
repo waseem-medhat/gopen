@@ -40,15 +40,36 @@ func Init(configDir string, configPath string) (err error) {
 func Write(config structs.Config, configPath string) (err error) {
 	jsonFile, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		return
+		return err
 	}
 
 	err = os.WriteFile(configPath, jsonFile, 0644)
 	if err != nil {
-		return
+		return err
 	}
 
-	return
+	return nil
+}
+
+func Migrate(configPath string) error {
+    originalConfig, err := Read(configPath)
+    if err != nil {
+        return err 
+    }
+
+
+    var newConfig = &structs.Config{
+        EditorCmd: originalConfig.EditorCmd,
+        CustomBehaviour: false,
+        DirAliases: originalConfig.DirAliases,
+    }
+
+    err = Write(*newConfig, configPath)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 // Read reads the configPath file and returns a Config struct
