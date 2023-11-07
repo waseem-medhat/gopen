@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/wipdev-tech/gopen/internal/config"
 	"github.com/wipdev-tech/gopen/internal/diralias"
@@ -35,7 +36,10 @@ func main() {
 
 	case "remove", "r":
 		handleRemove()
-
+	case "migrate", "m":
+		handleMigrate()
+	case "custom", "c":
+		handleCustom()
 	default:
 		handleGopen()
 	}
@@ -132,6 +136,45 @@ func handleRemove() {
 	errFatal(err)
 }
 
+func handleMigrate() {
+	err := config.Migrate(configPath)
+	if err != nil {
+		errFatal(err)
+	}
+	fmt.Println("Successfully migrated config")
+}
+func handleCustom() {
+
+	if len(os.Args) < 3 {
+		fmt.Println("Unexpected number of args: expected 2")
+	}
+
+	arg := strings.ToLower(os.Args[2])
+
+	if arg != "false" && arg != "true" {
+		err := fmt.Errorf("Error: expected argument true or false, got %v", arg)
+		errFatal(err)
+	}
+
+	custom := true
+
+	if arg == "false" {
+		custom = false
+	}
+	configObj, err := config.Read(configPath)
+	if err != nil {
+		errFatal(err)
+	}
+
+	configObj.CustomBehaviour = custom
+	err = config.Write(configObj, configPath)
+	if err != nil {
+		errFatal(err)
+	}
+
+	fmt.Printf("Successfully set custom behaviour to: %s\n", arg)
+
+}
 func handleHelp() {
 	fmt.Print(`Gopen - a simple CLI to quick-start coding projects
 

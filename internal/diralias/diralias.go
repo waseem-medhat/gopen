@@ -8,7 +8,7 @@ import (
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
-// listDirAliases pretty-prints each alias and its corresponding path
+// List pretty-prints each alias and its corresponding path
 func List(config structs.Config) (fmtAliases []string) {
 	var width int
 	for _, dirAlias := range config.DirAliases {
@@ -32,7 +32,9 @@ func List(config structs.Config) (fmtAliases []string) {
 func Add(config structs.Config, alias string, path string) (newConfig structs.Config, err error) {
 	newConfig = config
 
-	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init"}
+	// Check if alias is reserved
+	// Prevents aliases from matching Gopen commands
+	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init", "custom", "c", "m", "migrate", "r", "remove"}
 	for _, r := range reserved {
 		if r == alias {
 			err = fmt.Errorf("Error: `%v` is reserved and can't be used as an alias", alias)

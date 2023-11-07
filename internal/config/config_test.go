@@ -179,7 +179,7 @@ func TestWriteConfig(t *testing.T) {
 	}
 	defer os.Remove(tmpfile.Name()) // clean up
 
-	testConfig := structs.Config{
+	testConfig := structs.ConfigV1{
 		EditorCmd: "vim",
 		DirAliases: []structs.DirAlias{
 			{Alias: "docs", Path: "/usr/share/doc"},
@@ -199,7 +199,7 @@ func TestWriteConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = Write(testConfig, tmpfile.Name())
+	err = WriteV1(testConfig, tmpfile.Name())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -210,5 +210,79 @@ func TestWriteConfig(t *testing.T) {
 	}
 	if string(fileContents) != expectedOutput {
 		t.Fatalf("Expected %q but got %q", expectedOutput, string(fileContents))
+	}
+}
+
+func TestReadFromOldConfig(t *testing.T) {
+	var oldConfig structs.ConfigV1
+	oldConfig.EditorCmd = "vim"
+	oldConfig.DirAliases = []structs.DirAlias{
+		{Alias: "docs", Path: "/usr/share/doc"},
+	}
+	tmpfile, err := os.CreateTemp("", "example")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name())
+
+	err = WriteV1(oldConfig, tmpfile.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	newConfig, err := Read(tmpfile.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if newConfig.CustomBehaviour != false {
+		t.Fatal("Config's CustomBehaviour is not false")
+	}
+
+}
+
+func TestMigrate(t *testing.T) {
+	var oldConfig structs.ConfigV1
+	oldConfig.EditorCmd = "vim"
+	oldConfig.DirAliases = []structs.DirAlias{
+		{Alias: "docs", Path: "/usr/share/doc"},
+	}
+
+	tmpfile, err := os.CreateTemp("", "example")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name())
+
+	err = WriteV1(oldConfig, tmpfile.Name())
+
+	err = Migrate(tmpfile.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	newConfig, err := Read(tmpfile.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if newConfig.CustomBehaviour != false {
+		t.Fatal("Config's CustomBehaviour is not false")
+	}
+
+	if newConfig.EditorCmd != "vim" {
+		t.Fatal("Config's EditorCmd is not vim")
+	}
+
+	if len(newConfig.DirAliases) != 1 {
+		t.Fatal("Config's DirAliases is not 1")
+	}
+
+	if newConfig.DirAliases[0].Alias != "docs" {
+		t.Fatal("Config's DirAliases[0].Alias is not docs")
+	}
+
+	if newConfig.DirAliases[0].Path != "/usr/share/doc" {
+		t.Fatal("Config's DirAliases[0].Path is not /usr/share/doc")
 	}
 }
