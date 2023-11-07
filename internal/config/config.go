@@ -52,24 +52,23 @@ func Write(config structs.Config, configPath string) (err error) {
 }
 
 func Migrate(configPath string) error {
-    originalConfig, err := Read(configPath)
-    if err != nil {
-        return err 
-    }
+	originalConfig, err := Read(configPath)
+	if err != nil {
+		return err
+	}
 
+	var newConfig = &structs.Config{
+		EditorCmd:       originalConfig.EditorCmd,
+		CustomBehaviour: false,
+		DirAliases:      originalConfig.DirAliases,
+	}
 
-    var newConfig = &structs.Config{
-        EditorCmd: originalConfig.EditorCmd,
-        CustomBehaviour: false,
-        DirAliases: originalConfig.DirAliases,
-    }
+	err = Write(*newConfig, configPath)
+	if err != nil {
+		return err
+	}
 
-    err = Write(*newConfig, configPath)
-    if err != nil {
-        return err
-    }
-
-    return nil
+	return nil
 }
 
 // Read reads the configPath file and returns a Config struct
