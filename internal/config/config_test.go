@@ -187,6 +187,7 @@ func TestWriteConfig(t *testing.T) {
 	}
 	expectedOutput := `{
   "editorCmd": "vim",
+  "customBehaviour": false,
   "aliases": [
     {
       "alias": "docs",

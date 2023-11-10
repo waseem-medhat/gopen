@@ -41,10 +41,15 @@ func Add(config structs.Config, alias string, path string) (newConfig structs.Co
 		}
 	}
 
-    newPath, err := filepath.Abs(path)
-    if err != nil {
-        return
-    }
+	// If the path is ".", then we want to use the current directory
+	// instead of the literal "."
+	if path == "." {
+		path = "./"
+	}
+	newPath, err := filepath.Abs(path)
+	if err != nil {
+		return
+	}
 
 	newDirAlias := structs.DirAlias{Alias: alias, Path: newPath}
 

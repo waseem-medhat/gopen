@@ -35,7 +35,8 @@ func main() {
 
 	case "remove", "r":
 		handleRemove()
-
+	case "custom", "c":
+		handleCustom()
 	default:
 		handleGopen()
 	}
@@ -131,6 +132,28 @@ func handleRemove() {
 	err = config.Write(newConfig, configPath)
 	errFatal(err)
 }
+func handleCustom() {
+	configObj, err := config.Read(configPath)
+	errFatal(err)
+
+	switch len(os.Args) {
+	case 2:
+		fmt.Printf("Custom behaviour is set to :%v\n", configObj.CustomBehaviour)
+	case 3:
+		if os.Args[2] == "true" {
+			configObj.CustomBehaviour = true
+		} else if os.Args[2] == "false" {
+			configObj.CustomBehaviour = false
+		} else {
+			fmt.Println("Invalid argument, expected 'true' or 'false'")
+		}
+		err = config.Write(configObj, configPath)
+		errFatal(err)
+	default:
+		fmt.Println("Invalid number of arguments")
+	}
+
+}
 
 func handleHelp() {
 	fmt.Print(`Gopen - a simple CLI to quick-start coding projects
@@ -153,6 +176,8 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
     alias foo bar     Assign to alias 'foo' the path 'bar'
 
     remove foo        Remove alias 'foo' from the config
+    custom            Get custom behaviour
+    custom bool       Set custom behaviour to true or false
 
     help              Print this help message
 
