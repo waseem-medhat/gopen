@@ -2,8 +2,9 @@
 package structs
 
 type Config struct {
-	EditorCmd  string     `json:"editorCmd"`
-	DirAliases []DirAlias `json:"aliases"`
+	EditorCmd       string     `json:"editorCmd"`
+	CustomBehaviour bool       `json:"customBehaviour"`
+	DirAliases      []DirAlias `json:"aliases"`
 }
 
 type DirAlias struct {

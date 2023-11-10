@@ -31,7 +31,14 @@ func Gopen(targetAlias string, config structs.Config) (err error) {
 		return
 	}
 
-	cmd := exec.Command(editorCmd)
+	var cmd *exec.Cmd
+	// CustomBehaviour lets the user open the target path in a new buffer
+	if config.CustomBehaviour {
+		cmd = exec.Command(editorCmd)
+	} else {
+		cmd = exec.Command(editorCmd, targetPath)
+	}
+
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
