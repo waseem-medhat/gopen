@@ -4,6 +4,7 @@ package diralias
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
@@ -40,7 +41,12 @@ func Add(config structs.Config, alias string, path string) (newConfig structs.Co
 		}
 	}
 
-	newDirAlias := structs.DirAlias{Alias: alias, Path: path}
+    newPath, err := filepath.Abs(path)
+    if err != nil {
+        return
+    }
+
+	newDirAlias := structs.DirAlias{Alias: alias, Path: newPath}
 
 	for i, dirAlias := range newConfig.DirAliases {
 		if dirAlias.Alias == alias {
