@@ -11,57 +11,59 @@ import (
 
 // Init checks if the config file exists in configPath. If not, creates an
 // empty config file. configDir will also be created if it doesn't exist.
-func Init(configDir string, configPath string) (err error) {
-	_, err = os.Stat(configPath)
+func Init(configDir string, configPath string) error {
+	_, err := os.Stat(configPath)
 	if err == nil {
 		return os.ErrExist
 	}
 
 	err = os.MkdirAll(configDir, os.ModePerm)
 	if err != nil {
-		return
+		return err
 	}
 
 	_, err = os.Create(configPath)
 	if err != nil {
-		return
+		return err
 	}
 
 	emptyConfig := structs.Config{}
 	err = Write(emptyConfig, configPath)
 	if err != nil {
-		return
+		return err
 	}
 
-	return
+	return err
 }
 
 // Write writes config to configPath (will OVERWRITE if file already exists)
-func Write(config structs.Config, configPath string) (err error) {
+func Write(config structs.Config, configPath string) error {
 	jsonFile, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		return
+		return err
 	}
 
 	err = os.WriteFile(configPath, jsonFile, 0644)
 	if err != nil {
-		return
+		return err
 	}
 
-	return
+	return err
 }
 
 // Read reads the configPath file and returns a Config struct
-func Read(configPath string) (config structs.Config, err error) {
+func Read(configPath string) (structs.Config, error) {
+	var config structs.Config
+
 	f, err := os.ReadFile(configPath)
 	if err != nil {
-		return
+		return config, err
 	}
 
 	err = json.Unmarshal(f, &config)
 	if err != nil {
-		return
+		return config, err
 	}
 
-	return
+	return config, err
 }
