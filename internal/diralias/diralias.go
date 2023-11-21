@@ -19,7 +19,7 @@ func List(config structs.Config) []string {
 		}
 	}
 
-    var fmtAliases []string
+	var fmtAliases []string
 	for _, dirAlias := range config.DirAliases {
 		fmtAlias := fmt.Sprintf("%*s: %s", width, dirAlias.Alias, dirAlias.Path)
 		fmtAliases = append(fmtAliases, fmtAlias)
@@ -33,12 +33,12 @@ func List(config structs.Config) []string {
 // will overwrite it. It also ensures that no alias matches Gopen commands like
 // `alias` or `init`.
 func Add(config structs.Config, alias string, path string) (structs.Config, error) {
-    newConfig := config
+	newConfig := config
 
 	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init"}
 	for _, r := range reserved {
 		if r == alias {
-            err := fmt.Errorf("Error: `%v` is reserved and can't be used as an alias", alias)
+			err := fmt.Errorf("Error: `%v` is reserved and can't be used as an alias", alias)
 			return newConfig, err
 		}
 	}
