@@ -13,7 +13,7 @@ import (
 // Gopen uses the Config struct to find the path corresponding to targetAlias
 // and executes the editor command with the target path as the working
 // directory
-func Gopen(targetAlias string, config structs.Config) (err error) {
+func Gopen(targetAlias string, config structs.Config) error {
 	var targetPath string
 	for _, dirAlias := range config.DirAliases {
 		if targetAlias == dirAlias.Alias {
@@ -27,9 +27,9 @@ func Gopen(targetAlias string, config structs.Config) (err error) {
 	}
 
 	editorCmd := strings.Split(config.EditorCmd, " ")
-	err = os.Chdir(targetPath)
+    err := os.Chdir(targetPath)
 	if err != nil {
-		return
+		return err
 	}
 
 	var cmd *exec.Cmd
@@ -46,8 +46,8 @@ func Gopen(targetAlias string, config structs.Config) (err error) {
 
 	err = cmd.Run()
 	if err != nil {
-		return
+		return err
 	}
 
-	return
+	return err
 }

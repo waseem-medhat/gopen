@@ -1,7 +1,10 @@
-test:
+fmt:
+	go fmt ./...
+
+test: fmt
 	go test ./...
 
-lint:
+lint: fmt
 	golangci-lint run
 
 build:
