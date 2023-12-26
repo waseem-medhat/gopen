@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
@@ -25,7 +26,7 @@ func Gopen(targetAlias string, config structs.Config) (err error) {
 		return errors.New("Invalid command or non-existent alias\nRun `gopen help` for info")
 	}
 
-	editorCmd := config.EditorCmd
+	editorCmd := strings.Split(config.EditorCmd, " ")
 	err = os.Chdir(targetPath)
 	if err != nil {
 		return
@@ -34,9 +35,9 @@ func Gopen(targetAlias string, config structs.Config) (err error) {
 	var cmd *exec.Cmd
 	// CustomBehaviour lets the user open the target path in a new buffer
 	if config.CustomBehaviour {
-		cmd = exec.Command(editorCmd)
+        cmd = exec.Command(editorCmd[0], editorCmd[1:]...)
 	} else {
-		cmd = exec.Command(editorCmd, targetPath)
+		cmd = exec.Command(editorCmd[0], targetPath)
 	}
 
 	cmd.Stdin = os.Stdin
