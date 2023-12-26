@@ -181,6 +181,8 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
 
     custom            Get custom behaviour
     custom bool       Set custom behaviour to true or false
+                      (Custom behavior omits the path from the command execution,
+                      running 'cmd' instead of 'cmd path')
 
     help              Print this help message
 
