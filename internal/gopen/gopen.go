@@ -27,7 +27,7 @@ func Gopen(targetAlias string, config structs.Config) error {
 	}
 
 	editorCmd := strings.Split(config.EditorCmd, " ")
-    err := os.Chdir(targetPath)
+	err := os.Chdir(targetPath)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func Gopen(targetAlias string, config structs.Config) error {
 	var cmd *exec.Cmd
 	// CustomBehaviour lets the user open the target path in a new buffer
 	if config.CustomBehaviour {
-        cmd = exec.Command(editorCmd[0], editorCmd[1:]...)
+		cmd = exec.Command(editorCmd[0], editorCmd[1:]...)
 	} else {
 		cmd = exec.Command(editorCmd[0], targetPath)
 	}

@@ -35,8 +35,10 @@ func main() {
 
 	case "remove", "r":
 		handleRemove()
+
 	case "custom", "c":
 		handleCustom()
+
 	default:
 		handleGopen()
 	}
@@ -176,6 +178,7 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
     alias foo bar     Assign to alias 'foo' the path 'bar'
 
     remove foo        Remove alias 'foo' from the config
+
     custom            Get custom behaviour
     custom bool       Set custom behaviour to true or false
 
