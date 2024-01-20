@@ -22,17 +22,29 @@ folder and open your editor of choice.
 
 ## Installation
 
-- Check the [releases](https://github.com/wipdev-tech/gopen/releases) for the
-  binary (only Linux for now).
-- To install from source, you need to have Go installed, clone this repo and
-  run this command:
+### Precompiled binaries
+
+Check the [releases](https://github.com/wipdev-tech/gopen/releases) for Linux,
+MacOS, or Windows binaries.
+
+### From source
+
+You need to have [Go](https://go.dev/doc/install) installed. The installation
+is simply done by running this command:
+
+```bash
+go install github.com/wipdev-tech/gopen@latest
+```
+
+Alternatively, you can clone the repo, `cd` into its folder, and run:
 
 ```bash
 go install
 ```
 
-This should build the the `gopen` binary and install it in the directory
-specified by your `GOBIN` environment variable.
+In any case, this should build the the `gopen` binary and install it in the
+directory specified by your `GOBIN` environment variable (default is
+`~/go/bin`).
 
 ## Usage
 
