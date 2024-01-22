@@ -7,6 +7,7 @@ import (
 
 	"github.com/wipdev-tech/gopen/internal/config"
 	"github.com/wipdev-tech/gopen/internal/diralias"
+	"github.com/wipdev-tech/gopen/internal/fzf"
 	"github.com/wipdev-tech/gopen/internal/gopen"
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
@@ -16,7 +17,7 @@ var configPath = configDir + "/gopen.json"
 
 func main() {
 	if len(os.Args) < 2 {
-		handleHelp()
+		handleFuzzy()
 		return
 	}
 
@@ -187,4 +188,13 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
     help              Print this help message
 
 `)
+}
+
+func handleFuzzy() {
+	fmt.Println(`Gopen Fuzzy!!!`)
+	p := fzf.StartFzf(configPath)
+	if _, err := p.Run(); err != nil {
+		fmt.Printf("Alas, there's been an error: %v", err)
+		os.Exit(1)
+	}
 }
