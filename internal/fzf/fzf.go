@@ -10,6 +10,7 @@ import (
 
 type model struct {
 	aliases []structs.DirAlias
+	prompt  string
 }
 
 func initialModel(configPath string) model {
@@ -28,11 +29,20 @@ func (m model) Init() tea.Cmd {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
+		case "ctrl+c":
 			return m, tea.Quit
+		case "ctrl+w":
+			m.prompt = ""
+		case "backspace":
+			if len(m.prompt) >= 1 {
+				m.prompt = m.prompt[:len(m.prompt)-1]
+			}
+		default:
+			if len(msg.String()) == 1 {
+				m.prompt += msg.String()
+			}
 		}
 	}
 
@@ -40,11 +50,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := "Which project do you want to open?\n\n"
+	s := fmt.Sprintf("Which project do you want to open?\n> %s_\n\n", m.prompt)
 
 	for i, a := range m.aliases {
 		if i == 0 {
-			s += fmt.Sprintf("> %s  %s <\n\n", a.Alias, a.Path)
+			s += fmt.Sprintf("[ %s  %s ]\n\n", a.Alias, a.Path)
 			continue
 		}
 
@@ -55,7 +65,8 @@ func (m model) View() string {
 		}
 	}
 
-	s += "\nPress q to quit.\n"
+	s += "\nctrl+w  clear word"
+	s += "\nctrl+c  quit\n"
 	return s
 }
 

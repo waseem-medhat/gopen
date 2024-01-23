@@ -191,7 +191,6 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
 }
 
 func handleFuzzy() {
-	fmt.Println(`Gopen Fuzzy!!!`)
 	p := fzf.StartFzf(configPath)
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
