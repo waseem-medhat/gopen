@@ -52,21 +52,30 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	s := fmt.Sprintf("Which project do you want to open?\n> %s_\n\n", m.prompt)
 
+	maxLen := 0
+	for _, a := range m.aliases {
+		if len(a.Alias) > maxLen {
+			maxLen = len(a.Alias)
+		}
+	}
+
 	for i, a := range m.aliases {
 		if i == 0 {
-			s += fmt.Sprintf("[ %s  %s ]\n\n", a.Alias, a.Path)
+			fmtStr := fmt.Sprintf("[ %%-%ds  %%s ]\n\n", maxLen)
+			s += fmt.Sprintf(fmtStr, a.Alias, a.Path)
 			continue
 		}
 
-		s += fmt.Sprintf("  %s  %s\n", a.Alias, a.Path)
+		fmtStr := fmt.Sprintf("  %%-%ds  %%s\n", maxLen)
+		s += fmt.Sprintf(fmtStr, a.Alias, a.Path)
 
 		if i >= 9 {
 			break
 		}
 	}
 
-	s += "\nctrl+w  clear word"
-	s += "\nctrl+c  quit\n"
+	s += "\nctrl+w: clear word"
+	s += "\nctrl+c: quit\n"
 	return s
 }
 
