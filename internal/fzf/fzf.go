@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/wipdev-tech/gopen/internal/config"
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
@@ -11,6 +12,16 @@ import (
 type model struct {
 	aliases []structs.DirAlias
 	prompt  string
+}
+
+var styles = struct {
+	first  lipgloss.Style
+	rest   lipgloss.Style
+	prompt lipgloss.Style
+}{
+	first:  lipgloss.NewStyle().Foreground(lipgloss.Color("37")),
+	rest:   lipgloss.NewStyle().Faint(true),
+	prompt: lipgloss.NewStyle().Blink(true),
 }
 
 func initialModel(configPath string) model {
@@ -50,7 +61,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := fmt.Sprintf("Which project do you want to open?\n> %s_\n\n", m.prompt)
+	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.prompt)
+	s += styles.prompt.Render("|")
+	s += "\n\n"
 
 	maxLen := 0
 	for _, a := range m.aliases {
@@ -61,13 +74,15 @@ func (m model) View() string {
 
 	for i, a := range m.aliases {
 		if i == 0 {
-			fmtStr := fmt.Sprintf("[ %%-%ds  %%s ]\n\n", maxLen)
-			s += fmt.Sprintf(fmtStr, a.Alias, a.Path)
+			fmtStr := fmt.Sprintf("[ %%-%ds  %%s ]", maxLen)
+			s += styles.first.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
+			s += "\n"
 			continue
 		}
 
-		fmtStr := fmt.Sprintf("  %%-%ds  %%s\n", maxLen)
-		s += fmt.Sprintf(fmtStr, a.Alias, a.Path)
+		fmtStr := fmt.Sprintf("  %%-%ds  %%s", maxLen)
+		s += styles.rest.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
+		s += "\n"
 
 		if i >= 9 {
 			break
