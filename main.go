@@ -1,3 +1,6 @@
+// This is the main entry point for the Gopen tool. It includes the parsing
+// logic for command-line arguments and handler functions associated with each
+// command.
 package main
 
 import (
@@ -196,8 +199,11 @@ func handleFuzzy() {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
-	fzfModel, ok := m.(fzf.FzfModel)
+	fzfModel, ok := m.(fzf.Model)
 	if ok {
-		gopen.Gopen("wez", fzfModel.Config)
+		err = gopen.Gopen("wez", fzfModel.Config)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }

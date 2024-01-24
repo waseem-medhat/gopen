@@ -1,3 +1,5 @@
+// Package fzf contains types and logic for the interactive fuzzy finder part
+// of Gopen.
 package fzf
 
 import (
@@ -7,11 +9,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/wipdev-tech/gopen/internal/config"
 )
-
-type FzfModel struct {
-	Config config.C
-	Prompt string
-}
 
 var styles = struct {
 	first  lipgloss.Style
@@ -23,41 +20,49 @@ var styles = struct {
 	prompt: lipgloss.NewStyle().Blink(true),
 }
 
-func initialModel(configPath string) FzfModel {
+func initialModel(configPath string) Model {
 	cfg, err := config.Read(configPath)
 	if err != nil {
 		panic(err)
 	}
-	return FzfModel{
+	return Model{
 		Config: cfg,
 	}
 }
 
-func (m FzfModel) Init() tea.Cmd {
+// Model implements the tea.Model interface to be used as the model part of the
+// bubbletea program, but includes fields that hold the program state, namely
+// the config data and the search string
+type Model struct {
+	Config    config.C
+	SearchStr string
+}
+
+// Init is one of the tea.Model interface methods but not used by the fuzzy
+// finder.
+func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m FzfModel) cmdGopen() tea.Msg {
-	return tea.QuitMsg{}
-}
-
-func (m FzfModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+// Update is one of the tea.Model interface methods. It triggers updates to the
+// model and its state on keypresses.
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "ctrl+w":
-			m.Prompt = ""
+			m.SearchStr = ""
 		case "enter":
-			return m, m.cmdGopen
+			return m, tea.Quit
 		case "backspace":
-			if len(m.Prompt) >= 1 {
-				m.Prompt = m.Prompt[:len(m.Prompt)-1]
+			if len(m.SearchStr) >= 1 {
+				m.SearchStr = m.SearchStr[:len(m.SearchStr)-1]
 			}
 		default:
 			if len(msg.String()) == 1 {
-				m.Prompt += msg.String()
+				m.SearchStr += msg.String()
 			}
 		}
 	}
@@ -65,8 +70,9 @@ func (m FzfModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m FzfModel) View() string {
-	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.Prompt)
+// View is one of the tea.Model interface methods. It includes the rendering logic.
+func (m Model) View() string {
+	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.SearchStr)
 	s += styles.prompt.Render("|")
 	s += "\n\n"
 
@@ -99,6 +105,8 @@ func (m FzfModel) View() string {
 	return s
 }
 
+// StartFzf is the entry point for the fuzzy finder which spawns the bubbletea
+// program.
 func StartFzf(configPath string) *tea.Program {
 	return tea.NewProgram(initialModel(configPath))
 }

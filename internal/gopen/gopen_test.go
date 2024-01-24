@@ -2,5 +2,5 @@ package gopen
 
 import "testing"
 
-func TestGopen(t *testing.T) {
+func TestGopen(_ *testing.T) {
 }

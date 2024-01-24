@@ -9,7 +9,7 @@ import (
 	"github.com/wipdev-tech/gopen/internal/config"
 )
 
-// listDirAliases pretty-prints each alias and its corresponding path
+// List pretty-prints each alias and its corresponding path
 func List(config config.C) []string {
 	var width int
 
