@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/wipdev-tech/gopen/internal/structs"
+	"github.com/wipdev-tech/gopen/internal/config"
 )
 
 // listDirAliases pretty-prints each alias and its corresponding path
-func List(config structs.Config) []string {
+func List(config config.C) []string {
 	var width int
 
 	for _, dirAlias := range config.DirAliases {
@@ -32,14 +32,14 @@ func List(config structs.Config) []string {
 // struct with the newly added alias. If the alias already exists, the function
 // will overwrite it. It also ensures that no alias matches Gopen commands like
 // `alias` or `init`.
-func Add(config structs.Config, alias string, path string) (structs.Config, error) {
-	newConfig := config
+func Add(cfg config.C, alias string, path string) (config.C, error) {
+	var newCfg config.C
 
 	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init"}
 	for _, r := range reserved {
 		if r == alias {
 			err := fmt.Errorf("Error: `%v` is reserved and can't be used as an alias", alias)
-			return newConfig, err
+			return newCfg, err
 		}
 	}
 
@@ -50,18 +50,18 @@ func Add(config structs.Config, alias string, path string) (structs.Config, erro
 	}
 	newPath, err := filepath.Abs(path)
 	if err != nil {
-		return newConfig, err
+		return newCfg, err
 	}
 
-	newDirAlias := structs.DirAlias{Alias: alias, Path: newPath}
+	newDirAlias := config.DirAlias{Alias: alias, Path: newPath}
 
-	for i, dirAlias := range newConfig.DirAliases {
+	for i, dirAlias := range cfg.DirAliases {
 		if dirAlias.Alias == alias {
-			newConfig.DirAliases[i] = newDirAlias
-			return newConfig, err
+			newCfg.DirAliases[i] = newDirAlias
+			return newCfg, err
 		}
 	}
 
-	newConfig.DirAliases = append(newConfig.DirAliases, newDirAlias)
-	return newConfig, err
+	newCfg.DirAliases = append(newCfg.DirAliases, newDirAlias)
+	return newCfg, err
 }

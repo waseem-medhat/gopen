@@ -7,13 +7,13 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/wipdev-tech/gopen/internal/structs"
+	"github.com/wipdev-tech/gopen/internal/config"
 )
 
 // Gopen uses the Config struct to find the path corresponding to targetAlias
 // and executes the editor command with the target path as the working
 // directory
-func Gopen(targetAlias string, config structs.Config) error {
+func Gopen(targetAlias string, config config.C) error {
 	var targetPath string
 	for _, dirAlias := range config.DirAliases {
 		if targetAlias == dirAlias.Alias {

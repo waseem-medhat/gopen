@@ -4,18 +4,18 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/wipdev-tech/gopen/internal/structs"
+	"github.com/wipdev-tech/gopen/internal/config"
 )
 
 func TestList(t *testing.T) {
-	config := structs.Config{DirAliases: []structs.DirAlias{}}
-	result := List(config)
+	cfg := config.C{DirAliases: []config.DirAlias{}}
+	result := List(cfg)
 	if len(result) != 0 {
 		t.Errorf("Expected an empty slice, but got %v", result)
 	}
 
-	config = structs.Config{
-		DirAliases: []structs.DirAlias{
+	cfg = config.C{
+		DirAliases: []config.DirAlias{
 			{Alias: "x", Path: "/path/to/x"},
 			{Alias: "yz", Path: "/path/to/yz"},
 			{Alias: "abc", Path: "/path/to/abc"},
@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 		"abc: /path/to/abc",
 	}
 
-	actual := List(config)
+	actual := List(cfg)
 
 	for i, actLine := range actual {
 		if actLine != expected[i] {
@@ -39,20 +39,20 @@ func TestList(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	// Test adding a new alias
-	config := structs.Config{
+	cfg := config.C{
 		EditorCmd: "",
-		DirAliases: []structs.DirAlias{
+		DirAliases: []config.DirAlias{
 			{Alias: "alias1", Path: "/path/to/dir1"},
 			{Alias: "alias2", Path: "/path/to/dir2"},
 		},
 	}
-	newConfig, err := Add(config, "alias3", "/path/to/dir3")
+	newConfig, err := Add(cfg, "alias3", "/path/to/dir3")
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
-	expectedConfig := structs.Config{
+	expectedConfig := config.C{
 		EditorCmd: "",
-		DirAliases: []structs.DirAlias{
+		DirAliases: []config.DirAlias{
 			{Alias: "alias1", Path: "/path/to/dir1"},
 			{Alias: "alias2", Path: "/path/to/dir2"},
 			{Alias: "alias3", Path: "/path/to/dir3"},
@@ -63,13 +63,13 @@ func TestAdd(t *testing.T) {
 	}
 
 	// Test overwriting an existing alias
-	newConfig, err = Add(config, "alias2", "/path/to/newdir")
+	newConfig, err = Add(cfg, "alias2", "/path/to/newdir")
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
-	expectedConfig = structs.Config{
+	expectedConfig = config.C{
 		EditorCmd: "",
-		DirAliases: []structs.DirAlias{
+		DirAliases: []config.DirAlias{
 			{Alias: "alias1", Path: "/path/to/dir1"},
 			{Alias: "alias2", Path: "/path/to/newdir"},
 		},
@@ -79,7 +79,7 @@ func TestAdd(t *testing.T) {
 	}
 
 	// Test adding a reserved alias
-	_, err = Add(config, "alias", "/path/to/newdir")
+	_, err = Add(cfg, "alias", "/path/to/newdir")
 	if err == nil {
 		t.Errorf("Expected an error, but got nil")
 	}

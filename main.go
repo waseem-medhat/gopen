@@ -9,7 +9,6 @@ import (
 	"github.com/wipdev-tech/gopen/internal/diralias"
 	"github.com/wipdev-tech/gopen/internal/fzf"
 	"github.com/wipdev-tech/gopen/internal/gopen"
-	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
@@ -124,7 +123,7 @@ func handleRemove() {
 		return
 	}
 
-	var newConfig structs.Config
+	var newConfig config.C
 	newConfig.EditorCmd = configObj.EditorCmd
 	for _, dirAlias := range configObj.DirAliases {
 		if dirAlias.Alias != os.Args[2] {
@@ -197,8 +196,8 @@ func handleFuzzy() {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
-	model, ok := m.(fzf.Model)
+	fzfModel, ok := m.(fzf.FzfModel)
 	if ok {
-		gopen.Gopen("wez", model.Config)
+		gopen.Gopen("wez", fzfModel.Config)
 	}
 }

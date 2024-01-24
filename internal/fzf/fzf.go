@@ -6,11 +6,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/wipdev-tech/gopen/internal/config"
-	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
-type Model struct {
-	Config structs.Config
+type FzfModel struct {
+	Config config.C
 	Prompt string
 }
 
@@ -24,25 +23,25 @@ var styles = struct {
 	prompt: lipgloss.NewStyle().Blink(true),
 }
 
-func initialModel(configPath string) Model {
+func initialModel(configPath string) FzfModel {
 	cfg, err := config.Read(configPath)
 	if err != nil {
 		panic(err)
 	}
-	return Model{
+	return FzfModel{
 		Config: cfg,
 	}
 }
 
-func (m Model) Init() tea.Cmd {
+func (m FzfModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m Model) cmdGopen() tea.Msg {
+func (m FzfModel) cmdGopen() tea.Msg {
 	return tea.QuitMsg{}
 }
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m FzfModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -66,7 +65,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Model) View() string {
+func (m FzfModel) View() string {
 	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.Prompt)
 	s += styles.prompt.Render("|")
 	s += "\n\n"
