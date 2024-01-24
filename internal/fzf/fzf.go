@@ -20,22 +20,12 @@ var styles = struct {
 	prompt: lipgloss.NewStyle().Blink(true),
 }
 
-func initialModel(configPath string) Model {
-	cfg, err := config.Read(configPath)
-	if err != nil {
-		panic(err)
-	}
-	return Model{
-		Config: cfg,
-	}
-}
-
 // Model implements the tea.Model interface to be used as the model part of the
-// bubbletea program, but includes fields that hold the program state, namely
-// the config data and the search string
+// bubbletea program, but includes fields that hold the program state
 type Model struct {
 	Config    config.C
 	SearchStr string
+	Selected  string
 }
 
 // Init is one of the tea.Model interface methods but not used by the fuzzy
@@ -63,6 +53,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			if len(msg.String()) == 1 {
 				m.SearchStr += msg.String()
+				m.Selected = m.SearchStr
 			}
 		}
 	}
@@ -103,6 +94,16 @@ func (m Model) View() string {
 	s += "\nctrl+w: clear word"
 	s += "\nctrl+c: quit\n"
 	return s
+}
+
+func initialModel(configPath string) Model {
+	cfg, err := config.Read(configPath)
+	if err != nil {
+		panic(err)
+	}
+	return Model{
+		Config: cfg,
+	}
 }
 
 // StartFzf is the entry point for the fuzzy finder which spawns the bubbletea

@@ -199,11 +199,14 @@ func handleFuzzy() {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
-	fzfModel, ok := m.(fzf.Model)
-	if ok {
-		err = gopen.Gopen("wez", fzfModel.Config)
-		if err != nil {
-			fmt.Println(err)
+
+	if fzfModel, ok := m.(fzf.Model); ok {
+		alias := fzfModel.Selected
+		if alias != "" {
+			err = gopen.Gopen(alias, fzfModel.Config)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 }
