@@ -9,9 +9,9 @@ import (
 	"github.com/wipdev-tech/gopen/internal/structs"
 )
 
-type model struct {
-	aliases []structs.DirAlias
-	prompt  string
+type Model struct {
+	Config structs.Config
+	Prompt string
 }
 
 var styles = struct {
@@ -24,35 +24,41 @@ var styles = struct {
 	prompt: lipgloss.NewStyle().Blink(true),
 }
 
-func initialModel(configPath string) model {
+func initialModel(configPath string) Model {
 	cfg, err := config.Read(configPath)
 	if err != nil {
 		panic(err)
 	}
-	return model{
-		aliases: cfg.DirAliases,
+	return Model{
+		Config: cfg,
 	}
 }
 
-func (m model) Init() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) cmdGopen() tea.Msg {
+	return tea.QuitMsg{}
+}
+
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "ctrl+w":
-			m.prompt = ""
+			m.Prompt = ""
+		case "enter":
+			return m, m.cmdGopen
 		case "backspace":
-			if len(m.prompt) >= 1 {
-				m.prompt = m.prompt[:len(m.prompt)-1]
+			if len(m.Prompt) >= 1 {
+				m.Prompt = m.Prompt[:len(m.Prompt)-1]
 			}
 		default:
 			if len(msg.String()) == 1 {
-				m.prompt += msg.String()
+				m.Prompt += msg.String()
 			}
 		}
 	}
@@ -60,19 +66,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) View() string {
-	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.prompt)
+func (m Model) View() string {
+	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.Prompt)
 	s += styles.prompt.Render("|")
 	s += "\n\n"
 
 	maxLen := 0
-	for _, a := range m.aliases {
+	for _, a := range m.Config.DirAliases {
 		if len(a.Alias) > maxLen {
 			maxLen = len(a.Alias)
 		}
 	}
 
-	for i, a := range m.aliases {
+	for i, a := range m.Config.DirAliases {
 		if i == 0 {
 			fmtStr := fmt.Sprintf("[ %%-%ds  %%s ]", maxLen)
 			s += styles.first.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))

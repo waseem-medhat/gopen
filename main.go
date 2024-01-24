@@ -192,8 +192,13 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
 
 func handleFuzzy() {
 	p := fzf.StartFzf(configPath)
-	if _, err := p.Run(); err != nil {
+	m, err := p.Run()
+	if err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
+	}
+	model, ok := m.(fzf.Model)
+	if ok {
+		gopen.Gopen("wez", model.Config)
 	}
 }
