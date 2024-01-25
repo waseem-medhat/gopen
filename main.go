@@ -19,7 +19,7 @@ var configPath = configDir + "/gopen.json"
 
 func main() {
 	if len(os.Args) < 2 {
-		handleFuzzy()
+		handleFzf()
 		return
 	}
 
@@ -192,7 +192,7 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
 `)
 }
 
-func handleFuzzy() {
+func handleFzf() {
 	p := fzf.StartFzf(configPath)
 	m, err := p.Run()
 	if err != nil {

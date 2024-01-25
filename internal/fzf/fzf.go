@@ -13,11 +13,11 @@ import (
 var styles = struct {
 	first  lipgloss.Style
 	rest   lipgloss.Style
-	prompt lipgloss.Style
+	cursor lipgloss.Style
 }{
 	first:  lipgloss.NewStyle().Foreground(lipgloss.Color("37")),
 	rest:   lipgloss.NewStyle().Faint(true),
-	prompt: lipgloss.NewStyle().Blink(true),
+	cursor: lipgloss.NewStyle().Blink(true),
 }
 
 // Model implements the tea.Model interface to be used as the model part of the
@@ -26,6 +26,7 @@ type Model struct {
 	Config    config.C
 	SearchStr string
 	Selected  string
+	done      bool
 }
 
 // Init is one of the tea.Model interface methods but not used by the fuzzy
@@ -41,10 +42,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
+			m.done = true
 			return m, tea.Quit
 		case "ctrl+w":
 			m.SearchStr = ""
 		case "enter":
+			m.done = true
 			return m, tea.Quit
 		case "backspace":
 			if len(m.SearchStr) >= 1 {
@@ -64,7 +67,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View is one of the tea.Model interface methods. It includes the rendering logic.
 func (m Model) View() string {
 	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.SearchStr)
-	s += styles.prompt.Render("|")
+	if !m.done {
+		s += styles.cursor.Render("█")
+	}
 	s += "\n\n"
 
 	maxLen := 0
