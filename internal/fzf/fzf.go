@@ -6,27 +6,36 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	l "github.com/charmbracelet/lipgloss"
 	"github.com/wipdev-tech/gopen/internal/config"
 )
 
 var styles = struct {
-	first  lipgloss.Style
-	rest   lipgloss.Style
-	cursor lipgloss.Style
+	selected l.Style
+	rest     l.Style
+	cursor   l.Style
+	window   l.Style
 }{
-	first:  lipgloss.NewStyle().Foreground(lipgloss.Color("37")),
-	rest:   lipgloss.NewStyle().Faint(true),
-	cursor: lipgloss.NewStyle().Blink(true),
+	rest:   l.NewStyle().Faint(true),
+	cursor: l.NewStyle().Blink(true),
+	window: l.NewStyle().PaddingLeft(1).PaddingRight(1).Border(l.RoundedBorder()),
+	selected: l.NewStyle().
+		Foreground(l.Color("255")).
+		Background(l.Color("56")),
 }
 
 // Model implements the tea.Model interface to be used as the model part of the
-// bubbletea program, but includes fields that hold the program state
+// bubbletea program and includes fields that hold the program state.
+//
+// Note that the fields `Config` and `Selected` are exported because the are
+// used by the main package.
 type Model struct {
-	Config    config.C
-	SearchStr string
-	Selected  string
-	done      bool
+	Config      config.C
+	Selected    string
+	searchStr   string
+	selectedIdx int
+	helpShown   bool
+	done        bool
 }
 
 // Init is one of the tea.Model interface methods but not used by the fuzzy
@@ -44,19 +53,36 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			m.done = true
 			return m, tea.Quit
+
 		case "ctrl+w":
-			m.SearchStr = ""
+			m.searchStr = ""
+
+		case "up", "ctrl+p":
+			if m.selectedIdx > 0 {
+				m.selectedIdx--
+			}
+
+		case "down", "ctrl+n":
+			if m.selectedIdx < 9 && m.selectedIdx < len(m.Config.DirAliases)-1 {
+				m.selectedIdx++
+			}
+
 		case "enter":
 			m.done = true
 			return m, tea.Quit
+
 		case "backspace":
-			if len(m.SearchStr) >= 1 {
-				m.SearchStr = m.SearchStr[:len(m.SearchStr)-1]
+			if len(m.searchStr) >= 1 {
+				m.searchStr = m.searchStr[:len(m.searchStr)-1]
 			}
+
+		case "?":
+			m.helpShown = !m.helpShown
+
 		default:
 			if len(msg.String()) == 1 {
-				m.SearchStr += msg.String()
-				m.Selected = m.SearchStr
+				m.searchStr += msg.String()
+				m.Selected = m.searchStr
 			}
 		}
 	}
@@ -66,28 +92,31 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View is one of the tea.Model interface methods. It includes the rendering logic.
 func (m Model) View() string {
-	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.SearchStr)
+	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.searchStr)
 	if !m.done {
 		s += styles.cursor.Render("█")
 	}
 	s += "\n\n"
 
-	maxLen := 0
+	maxLenAlias := 0
+	maxLenPath := 0
 	for _, a := range m.Config.DirAliases {
-		if len(a.Alias) > maxLen {
-			maxLen = len(a.Alias)
+		if len(a.Alias) > maxLenAlias {
+			maxLenAlias = len(a.Alias)
+		}
+		if len(a.Path) > maxLenPath {
+			maxLenPath = len(a.Path)
 		}
 	}
 
+	fmtStr := fmt.Sprintf("  %%-%ds  %%-%ds ", maxLenAlias, maxLenPath+1)
 	for i, a := range m.Config.DirAliases {
-		if i == 0 {
-			fmtStr := fmt.Sprintf("[ %%-%ds  %%s ]", maxLen)
-			s += styles.first.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
+		if i == m.selectedIdx {
+			s += styles.selected.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
 			s += "\n"
 			continue
 		}
 
-		fmtStr := fmt.Sprintf("  %%-%ds  %%s", maxLen)
 		s += styles.rest.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
 		s += "\n"
 
@@ -96,9 +125,17 @@ func (m Model) View() string {
 		}
 	}
 
-	s += "\nctrl+w: clear word"
-	s += "\nctrl+c: quit\n"
-	return s
+	if m.helpShown {
+		s += "\n?         hide key bindings"
+		s += "\nctrl+n/↓  move selection down"
+		s += "\nctrl+p/↑  move selection up"
+		s += "\nctrl+w    clear search string"
+		s += "\nctrl+c    quit"
+	} else {
+		s += "\n?         show key bindings"
+		s += "\nctrl+c    quit"
+	}
+	return styles.window.Render(s) + "\n"
 }
 
 func initialModel(configPath string) Model {
