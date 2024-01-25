@@ -5,7 +5,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/wipdev-tech/gopen/internal/config"
@@ -56,20 +55,30 @@ func handleInit() {
 
 func handleEditor() {
 	cfg, err := config.Read(configPath)
-	errFatal(err)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+		return
+	}
 
 	if len(os.Args) < 3 {
 		fmt.Println(cfg.EditorCmd)
-	} else {
-		cfg.EditorCmd = os.Args[2]
-		err := config.Write(cfg, configPath)
-		errFatal(err)
+		return
 	}
+
+	cfg.EditorCmd = os.Args[2]
+	err = config.Write(cfg, configPath)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+	}
+
 }
 
 func handleAlias() {
 	cfg, err := config.Read(configPath)
-	errFatal(err)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+		return
+	}
 
 	switch len(os.Args) {
 	case 2:
@@ -94,7 +103,9 @@ func handleAlias() {
 		}
 
 		err = config.Write(cfg, configPath)
-		errFatal(err)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error: %v", err))
+		}
 
 	default:
 		fmt.Println("Too many arguments - exiting...")
@@ -103,7 +114,10 @@ func handleAlias() {
 
 func handleGopen() {
 	cfg, err := config.Read(configPath)
-	errFatal(err)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+		return
+	}
 
 	err = gopen.Gopen(os.Args[1], cfg)
 	if err != nil {
@@ -111,15 +125,12 @@ func handleGopen() {
 	}
 }
 
-func errFatal(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func handleRemove() {
 	cfg, err := config.Read(configPath)
-	errFatal(err)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+		return
+	}
 
 	if len(os.Args) != 3 {
 		fmt.Println("Error: must provide one alias to 'remove' command")
@@ -135,11 +146,17 @@ func handleRemove() {
 	}
 
 	err = config.Write(newConfig, configPath)
-	errFatal(err)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+	}
 }
+
 func handleCustom() {
 	cfg, err := config.Read(configPath)
-	errFatal(err)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+		return
+	}
 
 	switch len(os.Args) {
 	case 2:
@@ -153,7 +170,9 @@ func handleCustom() {
 			fmt.Println("Invalid argument, expected 'true' or 'false'")
 		}
 		err = config.Write(cfg, configPath)
-		errFatal(err)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error: %v", err))
+		}
 	default:
 		fmt.Println("Invalid number of arguments")
 	}
