@@ -15,11 +15,19 @@ var styles = struct {
 	rest     l.Style
 	cursor   l.Style
 	window   l.Style
+	question l.Style
+	logo     l.Style
 }{
-	rest:   l.NewStyle().Faint(true),
-	cursor: l.NewStyle().Blink(true),
-	window: l.NewStyle().PaddingLeft(1).PaddingRight(1).Border(l.RoundedBorder()),
+	logo:     l.NewStyle().Foreground(l.Color("56")),
+	question: l.NewStyle().Bold(true),
+	rest:     l.NewStyle().Faint(true),
+	cursor:   l.NewStyle().Blink(true),
+	window: l.NewStyle().
+		PaddingLeft(1).
+		PaddingRight(1).
+		Border(l.RoundedBorder()),
 	selected: l.NewStyle().
+		Bold(true).
 		Foreground(l.Color("255")).
 		Background(l.Color("56")),
 }
@@ -92,7 +100,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View is one of the tea.Model interface methods. It includes the rendering logic.
 func (m Model) View() string {
-	s := fmt.Sprintf("Which project do you want to open?\n> %s", m.searchStr)
+	logo := `
+   _____                            
+  / ____|                           
+ | |  __   ___   _ __    ___  _ __  
+ | | |_ | / _ \ | '_ \  / _ \| '_ \ 
+ | |__| || (_) || |_) ||  __/| | | |
+  \_____| \___/ | .__/  \___||_| |_|
+                | |                 
+                |_|                 
+`
+
+	s := styles.question.Render("Which project do you want to open?")
+	s += fmt.Sprintf("\n\n> %s", m.searchStr)
 	if !m.done {
 		s += styles.cursor.Render("█")
 	}
@@ -135,7 +155,7 @@ func (m Model) View() string {
 		s += "\n?         show key bindings"
 		s += "\nctrl+c    quit"
 	}
-	return styles.window.Render(s) + "\n"
+	return styles.logo.Render(logo) + "\n" + styles.window.Render(s) + "\n\n"
 }
 
 func initialModel(configPath string) Model {
