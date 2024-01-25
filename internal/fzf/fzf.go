@@ -124,14 +124,9 @@ func (m Model) View() string {
                 |_|                 
 `
 
-	s := styles.question.Render("Which project do you want to open?")
-	s += fmt.Sprintf("\n\n> %s", m.searchStr)
-	s += styles.cursor.Render("█")
-	s += "\n\n"
-
 	maxLenAlias := 0
 	maxLenPath := 0
-	for _, a := range m.results {
+	for _, a := range m.Config.DirAliases {
 		if len(a.Alias) > maxLenAlias {
 			maxLenAlias = len(a.Alias)
 		}
@@ -140,7 +135,15 @@ func (m Model) View() string {
 		}
 	}
 
-	fmtStr := fmt.Sprintf("  %%-%ds  %%-%ds ", maxLenAlias, maxLenPath+1)
+	fmtStr := fmt.Sprintf("%%-%ds", maxLenAlias+maxLenPath+6)
+	s := styles.question.Render(
+		fmt.Sprintf(fmtStr, "Which project do you want to open?"),
+	)
+	s += fmt.Sprintf("\n\n> %s", m.searchStr)
+	s += styles.cursor.Render("█")
+	s += "\n\n"
+
+	fmtStr = fmt.Sprintf("  %%-%ds  %%-%ds ", maxLenAlias, maxLenPath+1)
 	for i, a := range m.results {
 		if i == m.selectedIdx {
 			s += styles.selected.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
