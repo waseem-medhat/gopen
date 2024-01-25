@@ -4,6 +4,7 @@ package fzf
 
 import (
 	"fmt"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	l "github.com/charmbracelet/lipgloss"
@@ -41,6 +42,7 @@ type Model struct {
 	Config      config.C
 	Selected    string
 	searchStr   string
+	results     []config.DirAlias
 	selectedIdx int
 	helpShown   bool
 	done        bool
@@ -60,6 +62,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c":
 			m.done = true
+			m.Selected = ""
 			return m, tea.Quit
 
 		case "ctrl+w":
@@ -83,6 +86,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if len(m.searchStr) >= 1 {
 				m.searchStr = m.searchStr[:len(m.searchStr)-1]
 			}
+			m.results = searchAliases(m.Config.DirAliases, m.searchStr)
+			m.selectedIdx = 0
 
 		case "?":
 			m.helpShown = !m.helpShown
@@ -90,16 +95,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			if len(msg.String()) == 1 {
 				m.searchStr += msg.String()
-				m.Selected = m.searchStr
+				m.results = searchAliases(m.Config.DirAliases, m.searchStr)
+				m.selectedIdx = 0
 			}
 		}
 	}
 
+	if len(m.results) > 0 {
+		m.Selected = m.results[m.selectedIdx].Alias
+	}
 	return m, nil
 }
 
 // View is one of the tea.Model interface methods. It includes the rendering logic.
 func (m Model) View() string {
+	if m.done {
+		return ""
+	}
+
 	logo := `
    _____                            
   / ____|                           
@@ -113,14 +126,12 @@ func (m Model) View() string {
 
 	s := styles.question.Render("Which project do you want to open?")
 	s += fmt.Sprintf("\n\n> %s", m.searchStr)
-	if !m.done {
-		s += styles.cursor.Render("█")
-	}
+	s += styles.cursor.Render("█")
 	s += "\n\n"
 
 	maxLenAlias := 0
 	maxLenPath := 0
-	for _, a := range m.Config.DirAliases {
+	for _, a := range m.results {
 		if len(a.Alias) > maxLenAlias {
 			maxLenAlias = len(a.Alias)
 		}
@@ -130,7 +141,7 @@ func (m Model) View() string {
 	}
 
 	fmtStr := fmt.Sprintf("  %%-%ds  %%-%ds ", maxLenAlias, maxLenPath+1)
-	for i, a := range m.Config.DirAliases {
+	for i, a := range m.results {
 		if i == m.selectedIdx {
 			s += styles.selected.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
 			s += "\n"
@@ -140,7 +151,7 @@ func (m Model) View() string {
 		s += styles.rest.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
 		s += "\n"
 
-		if i >= 9 {
+		if i > 9 {
 			break
 		}
 	}
@@ -158,13 +169,28 @@ func (m Model) View() string {
 	return styles.logo.Render(logo) + "\n" + styles.window.Render(s) + "\n\n"
 }
 
+func searchAliases(aliases []config.DirAlias, searchStr string) []config.DirAlias {
+	newResults := []config.DirAlias{}
+	for _, a := range aliases {
+		if strings.Contains(a.Alias, searchStr) || strings.Contains(a.Path, searchStr) {
+			newResults = append(newResults, a)
+		}
+
+		if len(newResults) >= 10 {
+			break
+		}
+	}
+	return newResults
+}
+
 func initialModel(configPath string) Model {
 	cfg, err := config.Read(configPath)
 	if err != nil {
 		panic(err)
 	}
 	return Model{
-		Config: cfg,
+		Config:  cfg,
+		results: cfg.DirAliases[0:10],
 	}
 }
 
