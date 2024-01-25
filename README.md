@@ -1,4 +1,4 @@
-[![asciicast](https://asciinema.org/a/rKNFoJGH3xp9rFfzhe85VkvzG.svg)](https://asciinema.org/a/rKNFoJGH3xp9rFfzhe85VkvzG)
+![preview](https://i.imgur.com/an39lik.gif)
 
 **A simple CLI to quick-start coding projects**
 
