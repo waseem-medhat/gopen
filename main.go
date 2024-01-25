@@ -55,30 +55,30 @@ func handleInit() {
 }
 
 func handleEditor() {
-	configObj, err := config.Read(configPath)
+	cfg, err := config.Read(configPath)
 	errFatal(err)
 
 	if len(os.Args) < 3 {
-		fmt.Println(configObj.EditorCmd)
+		fmt.Println(cfg.EditorCmd)
 	} else {
-		configObj.EditorCmd = os.Args[2]
-		err := config.Write(configObj, configPath)
+		cfg.EditorCmd = os.Args[2]
+		err := config.Write(cfg, configPath)
 		errFatal(err)
 	}
 }
 
 func handleAlias() {
-	configObj, err := config.Read(configPath)
+	cfg, err := config.Read(configPath)
 	errFatal(err)
 
 	switch len(os.Args) {
 	case 2:
-		for _, fmtAlias := range diralias.List(configObj) {
+		for _, fmtAlias := range diralias.List(cfg) {
 			fmt.Println(fmtAlias)
 		}
 
 	case 3:
-		for _, dirAlias := range configObj.DirAliases {
+		for _, dirAlias := range cfg.DirAliases {
 			if dirAlias.Alias == os.Args[2] {
 				fmt.Println(dirAlias.Path)
 				return
@@ -87,13 +87,13 @@ func handleAlias() {
 		fmt.Println("Alias doesn't exist")
 
 	case 4:
-		configObj, err := diralias.Add(configObj, os.Args[2], os.Args[3])
+		cfg, err := diralias.Add(cfg, os.Args[2], os.Args[3])
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		err = config.Write(configObj, configPath)
+		err = config.Write(cfg, configPath)
 		errFatal(err)
 
 	default:
@@ -102,10 +102,10 @@ func handleAlias() {
 }
 
 func handleGopen() {
-	configObj, err := config.Read(configPath)
+	cfg, err := config.Read(configPath)
 	errFatal(err)
 
-	err = gopen.Gopen(os.Args[1], configObj)
+	err = gopen.Gopen(os.Args[1], cfg)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -118,7 +118,7 @@ func errFatal(err error) {
 }
 
 func handleRemove() {
-	configObj, err := config.Read(configPath)
+	cfg, err := config.Read(configPath)
 	errFatal(err)
 
 	if len(os.Args) != 3 {
@@ -127,8 +127,8 @@ func handleRemove() {
 	}
 
 	var newConfig config.C
-	newConfig.EditorCmd = configObj.EditorCmd
-	for _, dirAlias := range configObj.DirAliases {
+	newConfig.EditorCmd = cfg.EditorCmd
+	for _, dirAlias := range cfg.DirAliases {
 		if dirAlias.Alias != os.Args[2] {
 			newConfig.DirAliases = append(newConfig.DirAliases, dirAlias)
 		}
@@ -138,21 +138,21 @@ func handleRemove() {
 	errFatal(err)
 }
 func handleCustom() {
-	configObj, err := config.Read(configPath)
+	cfg, err := config.Read(configPath)
 	errFatal(err)
 
 	switch len(os.Args) {
 	case 2:
-		fmt.Printf("Custom behaviour is set to :%v\n", configObj.CustomBehaviour)
+		fmt.Printf("Custom behaviour is set to :%v\n", cfg.CustomBehaviour)
 	case 3:
 		if os.Args[2] == "true" {
-			configObj.CustomBehaviour = true
+			cfg.CustomBehaviour = true
 		} else if os.Args[2] == "false" {
-			configObj.CustomBehaviour = false
+			cfg.CustomBehaviour = false
 		} else {
 			fmt.Println("Invalid argument, expected 'true' or 'false'")
 		}
-		err = config.Write(configObj, configPath)
+		err = config.Write(cfg, configPath)
 		errFatal(err)
 	default:
 		fmt.Println("Invalid number of arguments")
