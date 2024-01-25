@@ -33,7 +33,7 @@ func List(config config.C) []string {
 // will overwrite it. It also ensures that no alias matches Gopen commands like
 // `alias` or `init`.
 func Add(cfg config.C, alias string, path string) (config.C, error) {
-	var newCfg config.C
+	newCfg := cfg
 
 	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init"}
 	for _, r := range reserved {
