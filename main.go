@@ -8,9 +8,7 @@ import (
 	"os"
 
 	"github.com/wipdev-tech/gopen/internal/config"
-	"github.com/wipdev-tech/gopen/internal/diralias"
 	"github.com/wipdev-tech/gopen/internal/fzf"
-	"github.com/wipdev-tech/gopen/internal/gopen"
 )
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
@@ -82,7 +80,7 @@ func handleAlias() {
 
 	switch len(os.Args) {
 	case 2:
-		for _, fmtAlias := range diralias.List(cfg) {
+		for _, fmtAlias := range cfg.ListAliases() {
 			fmt.Println(fmtAlias)
 		}
 
@@ -96,7 +94,7 @@ func handleAlias() {
 		fmt.Println("Alias doesn't exist")
 
 	case 4:
-		cfg, err := diralias.Add(cfg, os.Args[2], os.Args[3])
+		cfg, err := cfg.AddAlias(os.Args[2], os.Args[3])
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -119,7 +117,7 @@ func handleGopen() {
 		return
 	}
 
-	err = gopen.Gopen(os.Args[1], cfg)
+	err = cfg.Gopen(os.Args[1])
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -222,7 +220,7 @@ func handleFzf() {
 	if fzfModel, ok := m.(fzf.Model); ok {
 		alias := fzfModel.Selected
 		if alias != "" {
-			err = gopen.Gopen(alias, fzfModel.Config)
+			err = fzfModel.Config.Gopen(alias)
 			if err != nil {
 				fmt.Println(err)
 			}
