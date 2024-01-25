@@ -74,7 +74,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "down", "ctrl+n":
-			if m.selectedIdx < 9 && m.selectedIdx < len(m.Config.DirAliases)-1 {
+			if m.selectedIdx < len(m.results)-1 {
 				m.selectedIdx++
 			}
 
