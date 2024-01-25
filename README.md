@@ -1,3 +1,5 @@
+# Gopen
+
 ![preview](https://i.imgur.com/an39lik.gif)
 
 **A simple CLI to quick-start coding projects**
@@ -6,6 +8,8 @@ The premise of this command-line utility is to save an editor of choice and a
 list of aliases for your local development projects instead of "polluting" your
 system-level configs (e.g., `.bashrc`). Then, Gopen command will `cd` into that
 folder and open your editor of choice.
+
+Gopen can be used either via the interactive TUI or the command-line API.
 
 ## Installation
 
@@ -34,6 +38,8 @@ directory specified by your `GOBIN` environment variable (default is
 `~/go/bin`).
 
 ## Usage
+
+For the interactive TUI, simply run `gopen` in your terminal.
 
 ### Config File
 
