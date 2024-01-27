@@ -67,6 +67,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "ctrl+w":
 			m.searchStr = ""
+			m.results = searchAliases(m.Config.DirAliases, m.searchStr)
 
 		case "up", "ctrl+p":
 			if m.selectedIdx > 0 {
