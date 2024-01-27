@@ -113,61 +113,42 @@ func (m Model) View() string {
 		return ""
 	}
 
-	logo := `
-  ____                        
- / ___| ___  _ __   ___ _ __  
-| |  _ / _ \| '_ \ / _ \ '_ \ 
-| |_| | (_) | |_) |  __/ | | |
- \____|\___/| .__/ \___|_| |_|
-            |_|               
-`
+	maxAliasW, maxPathW, maxW := calcMaxWidths(m.Config.DirAliases)
 
-	maxLenAlias := 0
-	maxLenPath := 0
-	for _, a := range m.Config.DirAliases {
-		if len(a.Alias) > maxLenAlias {
-			maxLenAlias = len(a.Alias)
-		}
-		if len(a.Path) > maxLenPath {
-			maxLenPath = len(a.Path)
-		}
-	}
-
-	fmtStr := fmt.Sprintf("%%-%ds", maxLenAlias+maxLenPath+6)
 	s := styles.question.Render(
-		fmt.Sprintf(fmtStr, "Which project do you want to open?"),
+		alignQuestion("Which project do you want to open?", maxW),
 	)
 	s += fmt.Sprintf("\n\n> %s", m.searchStr)
 	s += styles.cursor.Render("█")
 	s += "\n\n"
 
-	fmtStr = fmt.Sprintf("  %%-%ds  %%-%ds ", maxLenAlias, maxLenPath+1)
 	for i, a := range m.results {
 		if i == m.selectedIdx {
-			s += styles.selected.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
+			s += styles.selected.Render(
+				alignResult(a.Alias, a.Path, maxAliasW, maxPathW),
+			)
 			s += "\n"
 			continue
 		}
 
-		s += styles.rest.Render(fmt.Sprintf(fmtStr, a.Alias, a.Path))
+		s += styles.rest.Render(
+			alignResult(a.Alias, a.Path, maxAliasW, maxPathW),
+		)
 		s += "\n"
 
-		if i > 9 {
+		if i >= 5 {
 			break
 		}
 	}
 
+	help := ""
 	if m.helpShown {
-		s += "\n?         hide key bindings"
-		s += "\nctrl+n/↓  move selection down"
-		s += "\nctrl+p/↑  move selection up"
-		s += "\nctrl+w    clear search string"
-		s += "\nctrl+c    quit"
+		help = fullHelp
 	} else {
-		s += "\n?         show key bindings"
-		s += "\nctrl+c    quit"
+		help = shortHelp
 	}
-	return styles.logo.Render(logo) + "\n" + styles.window.Render(s) + "\n\n"
+
+	return styles.logo.Render(gopenLogo) + "\n" + styles.window.Render(s+help) + "\n\n"
 }
 
 func searchAliases(aliases []config.DirAlias, searchStr string) []config.DirAlias {
@@ -177,7 +158,7 @@ func searchAliases(aliases []config.DirAlias, searchStr string) []config.DirAlia
 			newResults = append(newResults, a)
 		}
 
-		if len(newResults) >= 10 {
+		if len(newResults) >= 5 {
 			break
 		}
 	}
@@ -191,7 +172,7 @@ func initialModel(configPath string) Model {
 	}
 	return Model{
 		Config:  cfg,
-		results: cfg.DirAliases[0:10],
+		results: cfg.DirAliases[0:5],
 	}
 }
 
