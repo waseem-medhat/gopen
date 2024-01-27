@@ -19,7 +19,7 @@ var styles = struct {
 	question l.Style
 	logo     l.Style
 }{
-	logo:     l.NewStyle().Foreground(l.Color("56")),
+	logo:     l.NewStyle().Foreground(l.Color("57")),
 	question: l.NewStyle().Bold(true),
 	rest:     l.NewStyle().Faint(true),
 	cursor:   l.NewStyle().Blink(true),
@@ -115,32 +115,31 @@ func (m Model) View() string {
 	}
 
 	maxAliasW, maxPathW, maxW := calcMaxWidths(m.Config.DirAliases)
-
-	s := styles.question.Render(
+	logo := styles.logo.Render(gopenLogo)
+	question := styles.question.Render(
 		alignQuestion("Which project do you want to open?", maxW),
 	)
-	s += fmt.Sprintf("\n\n> %s", m.searchStr)
-	s += styles.cursor.Render("█")
-	s += "\n\n"
+	promptLine := fmt.Sprintf("> %s", m.searchStr) + styles.cursor.Render("█")
 
+	results := ""
 	for i, a := range m.results {
 		if i == m.selectedIdx {
-			s += styles.selected.Render(
+			results += styles.selected.Render(
 				alignResult(a.Alias, a.Path, maxAliasW, maxPathW),
 			)
-			s += "\n"
-			continue
+		} else {
+			results += styles.rest.Render(
+				alignResult(a.Alias, a.Path, maxAliasW, maxPathW),
+			)
 		}
 
-		s += styles.rest.Render(
-			alignResult(a.Alias, a.Path, maxAliasW, maxPathW),
-		)
-		s += "\n"
-
+		results += "\n"
 		if i >= 5 {
 			break
 		}
 	}
+
+	window := styles.window.Render(question + "\n\n" + promptLine + "\n\n" + results)
 
 	help := ""
 	if m.helpShown {
@@ -149,7 +148,7 @@ func (m Model) View() string {
 		help = shortHelp
 	}
 
-	return styles.logo.Render(gopenLogo) + "\n" + styles.window.Render(s+help) + "\n\n"
+	return logo + "\n" + window + help + "\n\n"
 }
 
 func searchAliases(aliases []config.DirAlias, searchStr string) []config.DirAlias {
