@@ -1,6 +1,5 @@
-// Package fzf contains types and logic for the interactive fuzzy finder part
-// of Gopen.
-package fzf
+// Package tui contains types and logic for the interactive TUI part of Gopen.
+package tui
 
 import (
 	"fmt"
@@ -48,8 +47,7 @@ type Model struct {
 	done        bool
 }
 
-// Init is one of the tea.Model interface methods but not used by the fuzzy
-// finder.
+// Init is one of the tea.Model interface methods but not used by the TUI.
 func (m Model) Init() tea.Cmd {
 	return nil
 }
@@ -177,8 +175,8 @@ func initialModel(cfg config.C) Model {
 	}
 }
 
-// StartFzf is the entry point for the fuzzy finder which spawns the bubbletea
-// program.
-func StartFzf(cfg config.C) *tea.Program {
+// StartTUI is the entry point for the interactive TUI which spawns the
+// bubbletea program.
+func StartTUI(cfg config.C) *tea.Program {
 	return tea.NewProgram(initialModel(cfg))
 }

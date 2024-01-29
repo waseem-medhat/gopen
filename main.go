@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/wipdev-tech/gopen/internal/config"
-	"github.com/wipdev-tech/gopen/internal/fzf"
+	"github.com/wipdev-tech/gopen/internal/tui"
 )
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"
@@ -16,7 +16,7 @@ var configPath = configDir + "/gopen.json"
 
 func main() {
 	if len(os.Args) < 2 {
-		handleFzf()
+		handleTUI()
 		return
 	}
 
@@ -209,7 +209,7 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
 `)
 }
 
-func handleFzf() {
+func handleTUI() {
 	cfg, err := config.Read(configPath)
 	if err != nil {
 		fmt.Println("Couldn't find config file\nRun `gopen init` to initialize one.")
@@ -226,17 +226,17 @@ func handleFzf() {
 		return
 	}
 
-	p := fzf.StartFzf(cfg)
+	p := tui.StartTUI(cfg)
 	m, err := p.Run()
 	if err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
 
-	if fzfModel, ok := m.(fzf.Model); ok {
-		alias := fzfModel.Selected
+	if tuiModel, ok := m.(tui.Model); ok {
+		alias := tuiModel.Selected
 		if alias != "" {
-			err = fzfModel.Config.Gopen(alias)
+			err = tuiModel.Config.Gopen(alias)
 			if err != nil {
 				fmt.Println(err)
 			}
