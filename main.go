@@ -210,7 +210,23 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
 }
 
 func handleFzf() {
-	p := fzf.StartFzf(configPath)
+	cfg, err := config.Read(configPath)
+	if err != nil {
+		fmt.Println("Couldn't find config file\nRun `gopen init` to initialize one.")
+		return
+	}
+
+	if len(cfg.DirAliases) == 0 {
+		fmt.Println("No aliases added yet\nAdd one with `gopen alias youralias path/to/proj`")
+		return
+	}
+
+	if cfg.EditorCmd == "" {
+		fmt.Println("Editor command not set\nSet it with `gopen editor youreditor`")
+		return
+	}
+
+	p := fzf.StartFzf(cfg)
 	m, err := p.Run()
 	if err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)

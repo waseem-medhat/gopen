@@ -165,19 +165,20 @@ func searchAliases(aliases []config.DirAlias, searchStr string) []config.DirAlia
 	return newResults
 }
 
-func initialModel(configPath string) Model {
-	cfg, err := config.Read(configPath)
-	if err != nil {
-		panic(err)
+func initialModel(cfg config.C) Model {
+	results := cfg.DirAliases
+	if len(cfg.DirAliases) > 5 {
+		results = cfg.DirAliases[0:5]
 	}
+
 	return Model{
 		Config:  cfg,
-		results: cfg.DirAliases[0:5],
+		results: results,
 	}
 }
 
 // StartFzf is the entry point for the fuzzy finder which spawns the bubbletea
 // program.
-func StartFzf(configPath string) *tea.Program {
-	return tea.NewProgram(initialModel(configPath))
+func StartFzf(cfg config.C) *tea.Program {
+	return tea.NewProgram(initialModel(cfg))
 }
