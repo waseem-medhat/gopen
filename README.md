@@ -100,3 +100,11 @@ the `gopen` command. It will cd into the assigned path and open your editor.
 ```bash
 gopen myproj
 ```
+
+## Contributing
+
+Any contributions are welcome! Feel free to raise issues for bug
+reports/feature requests or open pull requests.
+
+For PRs, please ensure the tests and linting rules pass before submitting the
+PR, and add your own tests if applicable.
