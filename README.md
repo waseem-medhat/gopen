@@ -35,7 +35,8 @@ go install
 
 In any case, this should build the the `gopen` binary and install it in the
 directory specified by your `GOBIN` environment variable (default is
-`~/go/bin`).
+`~/go/bin`). You might need to add that directory to your `PATH` variable if it
+isn't there by default.
 
 ## Usage
 
