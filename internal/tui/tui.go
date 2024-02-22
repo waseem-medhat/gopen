@@ -3,6 +3,7 @@ package tui
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -165,6 +166,7 @@ func searchAliases(aliases []config.DirAlias, searchStr string) []config.DirAlia
 
 func initialModel(cfg config.C) Model {
 	results := cfg.DirAliases
+	slices.Reverse(results)
 	if len(cfg.DirAliases) > 5 {
 		results = cfg.DirAliases[0:5]
 	}
