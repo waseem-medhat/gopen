@@ -10,6 +10,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	git "github.com/go-git/go-git/v5"
 )
 
 // C is the struct representation of Gopen config.
@@ -165,9 +167,11 @@ func (cfg C) SetGitRepo(alias string, repo string) (C, error) {
 // directory
 func (cfg C) Gopen(targetAlias string) error {
 	var targetPath string
+	var targetRepo string
 	for _, dirAlias := range cfg.DirAliases {
 		if targetAlias == dirAlias.Alias {
 			targetPath = dirAlias.Path
+			targetRepo = dirAlias.GitRepo
 			break
 		}
 	}
@@ -177,7 +181,20 @@ func (cfg C) Gopen(targetAlias string) error {
 	}
 
 	editorCmd := strings.Split(cfg.EditorCmd, " ")
-	err := os.Chdir(targetPath)
+
+	_, err := os.Stat(targetPath)
+	if os.IsNotExist(err) && targetRepo != "" {
+		fmt.Printf("dir %v not found\ntrying to clone %v\n", targetPath, targetRepo)
+		_, err = git.PlainClone(targetPath, false, &git.CloneOptions{
+			URL:      targetRepo,
+			Progress: os.Stdout,
+		})
+	}
+	if err != nil {
+		return err
+	}
+
+	err = os.Chdir(targetPath)
 	if err != nil {
 		return err
 	}
