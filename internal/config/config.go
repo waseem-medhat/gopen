@@ -22,8 +22,9 @@ type C struct {
 // DirAlias is the struct type for the directory aliases where each struct
 // contains the alias and the path it corresponds to.
 type DirAlias struct {
-	Alias string `json:"alias"`
-	Path  string `json:"path"`
+	Alias   string `json:"alias"`
+	Path    string `json:"path"`
+	GitRepo string `json:"git_repo"`
 }
 
 // Init checks if the config file exists in configPath. If not, creates an
@@ -111,7 +112,7 @@ func (cfg C) ListAliases() []string {
 func (cfg C) AddAlias(alias string, path string) (C, error) {
 	newCfg := cfg
 
-	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init"}
+	reserved := []string{"a", "alias", "e", "editor", "h", "help", "i", "init", "g", "git"}
 	for _, r := range reserved {
 		if r == alias {
 			err := fmt.Errorf("Error: `%v` is reserved and can't be used as an alias", alias)
@@ -140,6 +141,23 @@ func (cfg C) AddAlias(alias string, path string) (C, error) {
 
 	newCfg.DirAliases = append(newCfg.DirAliases, newDirAlias)
 	return newCfg, err
+}
+
+func (cfg C) SetGitRepo(alias string, repo string) (C, error) {
+	for i, dirAlias := range cfg.DirAliases {
+		if dirAlias.Alias == alias {
+			newDirAlias := DirAlias{
+				Alias:   dirAlias.Alias,
+				Path:    dirAlias.Path,
+				GitRepo: repo,
+			}
+
+			cfg.DirAliases[i] = newDirAlias
+			return cfg, nil
+		}
+	}
+
+	return cfg, fmt.Errorf("alias doesn't exist")
 }
 
 // Gopen uses the Config struct to find the path corresponding to targetAlias

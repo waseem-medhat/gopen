@@ -117,6 +117,26 @@ func handleGit() {
 	if len(os.Args) < 4 {
 		fmt.Println("Too few arguments - exiting...")
 	}
+	alias := os.Args[2]
+	repo := os.Args[3]
+
+	cfg, err := config.Read(configPath)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+		return
+	}
+
+	newCfg, err := cfg.SetGitRepo(alias, repo)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	err = config.Write(newCfg, configPath)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+	}
+
 	fmt.Printf("remote repo for `%v` was set to %v\n", os.Args[2], os.Args[3])
 }
 
