@@ -33,6 +33,9 @@ func main() {
 	case "alias", "a":
 		handleAlias()
 
+	case "git", "g":
+		handleGit()
+
 	case "remove", "r":
 		handleRemove()
 
@@ -108,6 +111,13 @@ func handleAlias() {
 	default:
 		fmt.Println("Too many arguments - exiting...")
 	}
+}
+
+func handleGit() {
+	if len(os.Args) < 4 {
+		fmt.Println("Too few arguments - exiting...")
+	}
+	fmt.Printf("remote repo for `%v` was set to %v\n", os.Args[2], os.Args[3])
 }
 
 func handleGopen() {
@@ -196,6 +206,9 @@ Can be abbreviated by the first letter ('gopen i' == 'gopen init')
     alias             List all saved aliases
     alias foo         Get path assigned to alias 'foo'
     alias foo bar     Assign to alias 'foo' the path 'bar'
+
+    git foo bar       Set remote git repo for alias 'foo' to be 'bar'
+                      This will try cloning the repo if the project doesn't exist
 
     remove foo        Remove alias 'foo' from the config
 
