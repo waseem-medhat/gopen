@@ -9,6 +9,10 @@ list of aliases for your local development projects instead of "polluting" your
 system-level configs (e.g., `.bashrc`). Then, Gopen command will `cd` into that
 folder and open your editor of choice.
 
+You can also save a git repo so that when you run the Gopen command and path
+doesn't exist (usually happens after a fresh OS installation), it clones the
+configured repo before opening the project.
+
 Gopen can be used either via the interactive TUI or the command-line API.
 
 ## Installation
