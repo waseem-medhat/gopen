@@ -3,7 +3,7 @@ package tui
 import (
 	"fmt"
 
-	"github.com/wipdev-tech/gopen/internal/config"
+	"github.com/waseem-medhat/gopen/internal/config"
 )
 
 var gopenLogo = `

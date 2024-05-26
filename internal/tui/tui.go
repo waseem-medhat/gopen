@@ -8,7 +8,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	l "github.com/charmbracelet/lipgloss"
-	"github.com/wipdev-tech/gopen/internal/config"
+	"github.com/waseem-medhat/gopen/internal/config"
 )
 
 var styles = struct {

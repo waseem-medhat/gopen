@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/wipdev-tech/gopen/internal/config"
+	"github.com/waseem-medhat/gopen/internal/config"
 )
 
 func TestInitConfigCreatesNewFile(t *testing.T) {

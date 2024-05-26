@@ -1,4 +1,4 @@
-module github.com/wipdev-tech/gopen
+module github.com/waseem-medhat/gopen
 
 go 1.21.1
 

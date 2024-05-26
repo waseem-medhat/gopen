@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/wipdev-tech/gopen/internal/config"
-	"github.com/wipdev-tech/gopen/internal/tui"
+	"github.com/waseem-medhat/gopen/internal/config"
+	"github.com/waseem-medhat/gopen/internal/tui"
 )
 
 var configDir = os.Getenv("HOME") + "/.config/gopen"

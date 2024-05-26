@@ -19,7 +19,7 @@ Gopen can be used either via the interactive TUI or the command-line API.
 
 ### Precompiled binaries
 
-Check the [releases](https://github.com/wipdev-tech/gopen/releases) for Linux,
+Check the [releases](https://github.com/waseem-medhat/gopen/releases) for Linux,
 MacOS, or Windows binaries.
 
 ### From source
@@ -28,7 +28,7 @@ You need to have [Go](https://go.dev/doc/install) installed. The installation
 is simply done by running this command:
 
 ```bash
-go install github.com/wipdev-tech/gopen@latest
+go install github.com/waseem-medhat/gopen@latest
 ```
 
 Alternatively, you can clone the repo, `cd` into its folder, and run:
