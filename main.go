@@ -116,6 +116,7 @@ func handleAlias() {
 func handleGit() {
 	if len(os.Args) < 4 {
 		fmt.Println("Too few arguments - exiting...")
+		os.Exit(1)
 	}
 	alias := os.Args[2]
 	repo := os.Args[3]
